@@ -1,0 +1,29 @@
+<div class="flexrow">
+    <form class="categories flexcol">
+        <div class="scrollable">
+            <section>
+                <div>{{localize "changeLog.tagForm.selectedProperties"}}</div>
+                <div>
+                    <input
+                        name="change-log-taginput"
+                        class="change-log-taginput"
+                        placeholder="{{placeholder}}"
+                    />
+                </div>
+                <div>
+                    <button type="button" id="change-log-clear-tags" class="tags--removeAllBtn">
+                        <i class="fa-duotone fa-filter-circle-xmark"></i>{{localize "changeLog.tagForm.clear"}}
+                    </button>
+                </div>
+            </section>
+        </div>
+        <footer class="sheet-footer flexrow">
+            <button type="submit" id="change-log-submit" name="submit" class="">
+                <i class="fas fa-check"></i></i>{{localize "changeLog.tagForm.accept"}}
+            </button>
+            <button type="button" id="change-log-cancel" name="cancel" class="">
+                <i class="fas fa-times"></i></i>{{localize "changeLog.tagForm.cancel"}}
+            </button>
+        </footer>
+    </form>
+</div>

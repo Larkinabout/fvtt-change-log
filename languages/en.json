@@ -1,0 +1,33 @@
+{
+    "changeLog": {
+        "empty": "–",
+        "modifiedBy": "Modified By",
+        "settings": {
+            "gmOnlyTagForm": {
+                "name": "Changes for GM-Only",
+                "label": "Changes for GM-Only",
+                "hint": "Changes to log for the GM-only"
+            },
+            "everyoneTagForm": {
+                "name": "Changes for Everyone",
+                "label": "Changes for Everyone",
+                "hint": "Changes to log for everyone"
+            }
+        },
+        "tagForm": {
+            "availableProperties": "Available Properties",
+            "selectedProperties": "Selected Properties",
+            "accept": "Accept",
+            "cancel": "Cancel",
+            "clear": "Clear Selected Properties",
+            "gm": {
+                "description": "Click items in the Available Properties box to select them or type into the Selected Properties ",
+                "title": "GM-Only Properties"
+            },
+            "everyone": {
+                "description": "Add or remove properties",
+                "title": "Everyone Properties"
+            }
+        }
+    }
+}

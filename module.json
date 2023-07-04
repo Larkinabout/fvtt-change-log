@@ -1,0 +1,39 @@
+{
+  "id": "change-log",
+  "title": "Change Log",
+  "description": "",
+  "version": "This is auto replaced",
+  "library": "false",
+  "compatibility": {
+    "minimum": 10,
+    "verified": 11.304
+  },
+  "authors": [
+    {
+      "name": "Larkinabout",
+      "url": "https://github.com/Larkinabout"
+    }
+  ],
+  "esmodules": [
+    "scripts/change-log.js"
+  ],
+  "styles": [
+    "styles/change-log.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "languages/en.json"
+    },
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "languages/dnd5e/en.json"
+    }
+  ],
+  "url": "This is auto replaced",
+  "manifest": "This is auto replaced",
+  "download": "This is auto replaced",
+  "readme": "https://github.com/Larkinabout/fvtt-change-log#readme"
+}
