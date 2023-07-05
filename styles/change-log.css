@@ -175,3 +175,7 @@
 .change-log-tags-dropdown .tagify__dropdown__item--hidden {
     display: none;
 }
+
+.change-log-card-hidden {
+    display: none;
+}

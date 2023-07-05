@@ -63,10 +63,9 @@ export class TagForm extends FormApplication {
      * @param {object} formData The form data
      */
     async updateObject (setting) {
-        const tags = TagForm.tagify.value.map(tag => tag.id)
+        const tags = TagForm.tagify.value.map(tag => tag.id ?? tag.value)
         const tagsString = tags.join(DELIMITER)
         await Utils.setSetting(setting, tagsString)
-        game.changeLog.getProperties()
     }
 }
 
@@ -109,9 +108,9 @@ Hooks.on('renderTagForm', (app, html, options) => {
     default:
         return
     }
-    const tagsArray = (tagsString) ? tagsString.split(DELIMITER) : []
-    tags.selected = tagsArray.map(id => { return { id, value: Utils.getChangeProperty(id) } })
-    tags.available = availableTags.map(id => { return { id, value: Utils.getChangeProperty(id) } })
+    const selectedTags = (tagsString) ? tagsString.split(DELIMITER) : []
+    tags.selected = (selectedTags) ? selectedTags.map(id => { return { id, value: Utils.getChangeProperty(id) } }) : null
+    tags.available = (availableTags) ? availableTags.map(id => { return { id, value: Utils.getChangeProperty(id) } }) : null
 
     const $tagFilter = html.find('input[class="change-log-taginput"]')
 

@@ -56,34 +56,39 @@ export const registerSettings = function () {
         name: 'GM Properties',
         scope: 'world',
         config: false,
-        type: String
+        type: String,
+        onChange: () => { game.changeLog.getGmProperties() }
     })
 
     game.settings.register(MODULE.ID, 'gmActorTypes', {
         name: 'GM Actor Types',
         scope: 'world',
         config: false,
-        type: String
+        type: String,
+        onChange: () => { game.changeLog.getGmActorTypes() }
     })
 
     game.settings.register(MODULE.ID, 'everyoneProperties', {
         name: 'Everyone Properties',
         scope: 'world',
         config: false,
-        type: String
+        type: String,
+        onChange: () => { game.changeLog.getEveryoneProperties() }
     })
 
     game.settings.register(MODULE.ID, 'everyoneActorTypes', {
         name: 'Everyone Actor Types',
         scope: 'world',
         config: false,
-        type: String
+        type: String,
+        onChange: () => { game.changeLog.getEveryoneActorTypes() }
     })
 
     game.settings.register(MODULE.ID, 'playerProperties', {
         name: 'Player Properties',
         scope: 'world',
         config: false,
-        type: String
+        type: String,
+        onChange: () => { game.changeLog.getPlayerProperties() }
     })
 }

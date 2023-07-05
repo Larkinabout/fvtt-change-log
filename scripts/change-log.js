@@ -12,7 +12,7 @@ Hooks.on('preUpdateActiveEffect', async (activeEffect, data, options, userId) =>
     await game.changeLog.getPreUpdateData('activeEffect', { document: activeEffect, data, options, userId })
 })
 
-Hooks.on('deleteActiveEffect', async (activeEffect, data, userId) => {
+Hooks.on('preDeleteActiveEffect', async (activeEffect, data, userId) => {
     await game.changeLog.getDeleteData('activeEffect', { document: activeEffect, data, userId })
 })
 
@@ -24,140 +24,164 @@ Hooks.on('preUpdateItem', async (item, data, options, userId) => {
     await game.changeLog.getPreUpdateData('item', { document: item, data, options, userId })
 })
 
+Hooks.on('renderChatMessage', async (chatMessage, html) => {
+    if (!chatMessage.flags.changeLog) return
+    if (chatMessage.whisper.length && !chatMessage.whisper.includes(game.user.id)) { html.addClass('change-log-card-hidden') }
+})
+
 export class ChangeLog {
     async init () {
-        await loadTemplates([TEMPLATE.CHAT_CARD])
-        this.getActorTypes()
-        this.getProperties()
+        Promise.all([
+            loadTemplates([TEMPLATE.CHAT_CARD]),
+            this.getEveryoneActorTypes(),
+            this.getEveryoneProperties(),
+            this.getGmActorTypes(),
+            this.getGmProperties(),
+            this.getPlayerProperties()
+        ])
     }
 
-    getActorTypes () {
-        this.everyoneActorTypes = Utils.getSetting('everyoneActorTypes')
-        this.gmActorTypes = Utils.getSetting('gmActorTypes')
+    async getEveryoneActorTypes () {
+        this.everyoneActorTypes = await Utils.getSetting('everyoneActorTypes')?.split(DELIMITER) ?? []
     }
 
-    async getProperties () {
-        this.everyoneProperties = await this.#getProperties('everyoneProperties')
-        this.gmProperties = await this.#getProperties('gmProperties')
-        this.playerProperties = await this.#getProperties('playerProperties')
+    async getEveryoneProperties () {
+        this.everyoneProperties = await Utils.getSetting('everyoneProperties')?.split(DELIMITER) ?? []
     }
 
-    async #getProperties (setting) {
-        const properties = Utils.getSetting(setting)?.split(DELIMITER) ?? ''
-        const propertiesMap = new Map()
-        for (const property of properties) {
-            const arr = property.split('.')
-            const type = arr[0]
-            const dot = arr.slice(1).join('.')
-            if (propertiesMap.has(type)) {
-                propertiesMap.get(type).push(dot)
-            } else {
-                propertiesMap.set(type, [dot])
-            }
-        }
+    async getGmActorTypes () {
+        this.gmActorTypes = await Utils.getSetting('gmActorTypes')?.split(DELIMITER) ?? []
+    }
 
-        return propertiesMap
+    async getGmProperties () {
+        this.gmProperties = await Utils.getSetting('gmProperties')?.split(DELIMITER) ?? []
+    }
+
+    async getPlayerProperties () {
+        this.playerProperties = await Utils.getSetting('playerProperties')?.split(DELIMITER) ?? []
     }
 
     async getPreUpdateData (documentType, preUpdateData) {
-        const { document, data, options } = preUpdateData
+        const { document, data, options, userId } = preUpdateData
 
-        const everyoneProperties = this.everyoneProperties.get(documentType) ?? []
-        const gmProperties = this.gmProperties.get(documentType) ?? []
-        const playerProperties = this.playerProperties.get(documentType) ?? []
-
-        if (!everyoneProperties.length && !gmProperties.length && !playerProperties.length) return
-
-        const parentDocument = (['activeEffect', 'item'].includes(documentType) && document.parent?.documentName === 'Actor')
+        const parentDocument = (documentType !== 'actor' && document.parent?.documentName === 'Actor')
             ? document.parent
             : null
         const actor = parentDocument ?? document
-        const actorType = actor.type
-        const owners = Object.entries(actor.ownership)
-            .filter(([userId, ownershipLevel]) => !game.users.get(userId)?.isGM && ownershipLevel === 3)
-            .map(([userId, _]) => userId)
-        const gms = game.users.filter(user => user.isGM).map(user => user.id)
-        const document1Name = parentDocument?.name ?? document?.name
-        const document2Name = (parentDocument) ? document.name : null
 
         // eslint-disable-next-line no-undef
         const flattenedObjects = await flattenObject(data)
 
-        const modifiedByName = game.users.get(flattenedObjects['_stats.lastModifiedBy'])?.name
+        const modifiedByName = game.users.get(userId)?.name
 
         for (const key of Object.keys(flattenedObjects)) {
-            const isEveryone = (this.everyoneActorTypes.includes(actorType) && everyoneProperties.includes(key))
-            const isGm = (this.gmActorTypes.includes(actorType) && gmProperties.includes(key))
-            const isPlayer = playerProperties.includes(key)
+            const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor.type, key)
 
             if (!isEveryone && !isGm && !isPlayer) continue
 
-            const oldValue = Utils.getValueByDotNotation(document, key)
-            const newValue = Utils.getValueByDotNotation(data, key)
-
-            if (this.isNotValidChange({ oldValue, newValue })) continue
-
-            const hbsData = {
-                document1Name,
-                document2Name,
-                property: Utils.getChangeProperty(`${documentType}.${key}`),
-                oldValue: Utils.getChangeValue(oldValue),
-                newValue: Utils.getChangeValue(newValue),
-                tooltip: `<div>${game.i18n.localize('changeLog.modifiedBy')}: ${modifiedByName}</div>`
-            }
-            const content = await renderTemplate(TEMPLATE.CHAT_CARD, hbsData)
-
-            let whisper = null
-            if (!isEveryone) {
-                whisper = []
-                if (isGm) whisper.push(...gms)
-                if (isPlayer) whisper.push(...owners)
+            const templateData = {
+                document1Name: (parentDocument) ? parentDocument.name : document.name,
+                document2Name: (parentDocument) ? document.name : null,
+                propertyKey: `${documentType}.${key}`,
+                modifiedByName,
+                oldValue: Utils.getValueByDotNotation(document, key),
+                newValue: Utils.getValueByDotNotation(data, key)
             }
 
-            await ChatMessage.create({
-                content,
-                whisper
-            })
+            const whisperData = {
+                actor,
+                isEveryone,
+                isGm,
+                isPlayer
+            }
+
+            this.#createChatMessage(templateData, whisperData)
         }
     }
 
     async getDeleteData (documentType, deleteData) {
         const { document, userId } = deleteData
-        const gmProperties = this.gmProperties.get(documentType) ?? []
-        const everyoneProperties = this.everyoneProperties.get(documentType) ?? []
         const key = 'deleted'
-        const parentDocument = (['activeEffect', 'item'].includes(documentType) && document.parent?.documentName === 'Actor') ? document.parent : null
-        const actorType = (parentDocument) ? parentDocument.type : document.type
-        const document1Name = (parentDocument) ? parentDocument.name : document.name
-        const document2Name = (parentDocument) ? document.name : null
-        const modifiedByName = game.users.get(userId)?.name
-        let isGmOnly = true
+        const parentDocument = (documentType !== 'actor' && document.parent?.documentName === 'Actor') ? document.parent : null
+        const actor = parentDocument ?? document
 
-        const isEveryone = (this.everyoneActorTypes.includes(actorType) && everyoneProperties.includes(key))
-        const isGm = (this.gmActorTypes.includes(actorType) && gmProperties.includes(key))
-        if (!isEveryone && !isGm) return
-        if (isEveryone) { isGmOnly = false }
+        const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor.type, key)
 
-        const hbsData = {
-            document1Name,
-            document2Name,
-            property: Utils.getChangeProperty(`${documentType}.${key}`),
+        if (!isEveryone && !isGm && !isPlayer) return
+
+        const templateData = {
+            document1Name: (parentDocument) ? parentDocument.name : document.name,
+            document2Name: (parentDocument) ? document.name : null,
+            propertyKey: `${documentType}.${key}`,
+            modifiedByName: game.users.get(userId)?.name,
             oldValue: null,
-            newValue: Utils.getChangeValue(true),
-            tooltip: `<div>${game.i18n.localize('changeLog.modifiedBy')}: ${modifiedByName}</div>`
+            newValue: true
         }
-        const content = await renderTemplate(TEMPLATE.CHAT_CARD, hbsData)
-        const whisper = (isGmOnly) ? game.users.filter(user => user.isGmOnly).map(user => user.id) : null
 
-        await ChatMessage.create({
-            content,
-            whisper
-        })
+        const whisperData = {
+            actor,
+            isEveryone,
+            isGm,
+            isPlayer
+        }
+
+        this.#createChatMessage(templateData, whisperData)
     }
 
-    isNotValidChange (value) {
+    #getAudience (documentType, actorType, key) {
+        return {
+            isEveryone: (this.everyoneActorTypes.includes(actorType) && this.everyoneProperties.includes(`${documentType}.${key}`)),
+            isGm: (this.gmActorTypes.includes(actorType) && this.gmProperties.includes(`${documentType}.${key}`)),
+            isPlayer: this.playerProperties.includes(`${documentType}.${key}`)
+        }
+    }
+
+    #getGms () {
+        return game.users.filter(user => user.isGM).map(user => user.id)
+    }
+
+    #getOwners (actor) {
+        return Object.entries(actor.ownership)
+            .filter(([userId, ownershipLevel]) => !game.users.get(userId)?.isGM && ownershipLevel === 3)
+            .map(([userId, _]) => userId)
+    }
+
+    #isNotValidChange (value) {
         if (value.oldValue === value.newValue) return true
         if ([0, null].includes(value.oldValue) && [0, null].includes(value.newValue)) return true
         return false
+    }
+
+    async #createChatMessage (templateData, whisperData) {
+        const { document1Name, document2Name, propertyKey, oldValue, newValue, modifiedByName } = templateData
+        const { actor, isEveryone, isGm, isPlayer } = whisperData
+
+        if (this.#isNotValidChange({ oldValue, newValue })) return
+
+        const content = await renderTemplate(
+            TEMPLATE.CHAT_CARD,
+            {
+                document1Name,
+                document2Name,
+                property: Utils.getChangeProperty(propertyKey),
+                oldValue: Utils.getChangeValue(oldValue),
+                newValue: Utils.getChangeValue(newValue),
+                tooltip: `<div>${game.i18n.localize('changeLog.modifiedBy')}: ${modifiedByName}</div>`
+            }
+        )
+
+        const owners = this.#getOwners(actor)
+        const gms = this.#getGms()
+
+        const speaker = { alias: 'Change Log' }
+
+        let whisper = null
+        if (!isEveryone) {
+            whisper = []
+            if (isGm) whisper.push(...gms)
+            if (isPlayer) whisper.push(...owners)
+        }
+
+        await ChatMessage.create({ content, speaker, whisper, flags: { changeLog: true } })
     }
 }
