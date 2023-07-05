@@ -3,30 +3,79 @@
         "empty": "–",
         "modifiedBy": "Modified By",
         "settings": {
-            "gmOnlyTagForm": {
-                "name": "Changes for GM-Only",
-                "label": "Changes for GM-Only",
-                "hint": "Changes to log for the GM-only"
+            "everyoneActorTypesForm": {
+                "name": "Actor Types for Everyone",
+                "label": "Actor Types for Everyone",
+                "hint": "Actor types to log for everyone"
             },
-            "everyoneTagForm": {
+            "everyonePropertiesForm": {
                 "name": "Changes for Everyone",
                 "label": "Changes for Everyone",
                 "hint": "Changes to log for everyone"
+            },
+            "gmActorTypesForm": {
+                "name": "Actor Types for GM",
+                "label": "Actor Types for GM",
+                "hint": "Actor types to log for the GM"
+            },
+            "gmPropertiesForm": {
+                "name": "Changes for GM",
+                "label": "Changes for GM",
+                "hint": "Changes to log for the GM"
+            },
+            "playerPropertiesForm": {
+                "name": "Changes for Player",
+                "label": "Changes for Player",
+                "hint": "Changes to log for the player"
             }
         },
         "tagForm": {
-            "availableProperties": "Available Properties",
-            "selectedProperties": "Selected Properties",
             "accept": "Accept",
             "cancel": "Cancel",
-            "clear": "Clear Selected Properties",
-            "gm": {
-                "description": "Click items in the Available Properties box to select them or type into the Selected Properties ",
-                "title": "GM-Only Properties"
+            "everyoneActorTypes": {
+                "description": "Click items in the Available Types box to select them or type into the Selected Types.",
+                "title": "Actor Types for Everyone",
+                "label": {
+                    "available": "Available Types",
+                    "selected": "Selected Types",
+                    "clear": "Clear Selected Types"
+                }
             },
-            "everyone": {
-                "description": "Add or remove properties",
-                "title": "Everyone Properties"
+            "everyoneProperties": {
+                "description": "Click items in the Available Properties box to select them or type into the Selected Properties.",
+                "title": "Changes for Everyone",
+                "label": {
+                    "available": "Available Properties",
+                    "selected": "Selected Properties",
+                    "clear": "Clear Selected Properties"
+                }
+            },
+            "gmActorTypes": {
+                "description": "Click items in the Available Types box to select them or type into the Selected Types.",
+                "title": "Actor Types for GM",
+                "label": {
+                    "available": "Available Types",
+                    "selected": "Selected Types",
+                    "clear": "Clear Selected Types"
+                }
+            },
+            "gmProperties": {
+                "description": "Click items in the Available Properties box to select them or type into the Selected Properties.",
+                "title": "Changes for GM",
+                "label": {
+                    "available": "Available Properties",
+                    "selected": "Selected Properties",
+                    "clear": "Clear Selected Properties"
+                }
+            },
+            "playerProperties": {
+                "description": "Click items in the Available Properties box to select them or type into the Selected Properties.",
+                "title": "Changes for Player",
+                "label": {
+                    "available": "Available Properties",
+                    "selected": "Selected Properties",
+                    "clear": "Clear Selected Properties"
+                }
             }
         }
     }

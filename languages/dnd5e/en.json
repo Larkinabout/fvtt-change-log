@@ -1,6 +1,10 @@
 {
     "changeLog": {
         "dnd5e": {
+            "character": "Character",
+            "npc": "NPC",
+            "vehicle": "Vehicle",
+            "group": "Group",
             "activeEffect.deleted": "Active Effect Deleted",
             "activeEffect.disabled": "Active Effect Disabled",
             "actor.flags.dnd5e.initiativeAlert": "Initiative Alert Feat",
@@ -156,7 +160,6 @@
             "item.system.uses.value": "Available Uses",
             "item.system.uses.max": "Max Uses",
             "item.system.weight": "Weight"
-
         }
     }
 }

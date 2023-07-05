@@ -1,5 +1,5 @@
 import { DELIMITER, MODULE, TEMPLATE } from './constants.js'
-import { PROPERTIES } from './properties.js'
+import { ACTOR_TYPES, PROPERTIES } from './properties.js'
 import { Utils } from './utils.js'
 
 export class TagForm extends FormApplication {
@@ -77,10 +77,41 @@ export class TagForm extends FormApplication {
      */
 Hooks.on('renderTagForm', (app, html, options) => {
     const tags = {}
-    const tagsString = (app.constructor.name === 'GmTagForm') ? Utils.getSetting('gmOnlyProperties') : Utils.getSetting('everyoneProperties')
-    const tagsArray = tagsString.split(DELIMITER)
+    let tagsString = null
+    let availableLabel = null
+    let availableTags = []
+    switch (app.constructor.name) {
+    case 'EveryoneActorTypesTagForm':
+        tagsString = Utils.getSetting('everyoneActorTypes')
+        availableLabel = game.i18n.localize('changeLog.tagForm.everyoneActorTypes.label.available')
+        availableTags = ACTOR_TYPES
+        break
+    case 'EveryonePropertiesTagForm':
+        tagsString = Utils.getSetting('everyoneProperties')
+        availableLabel = game.i18n.localize('changeLog.tagForm.everyoneProperties.label.available')
+        availableTags = PROPERTIES
+        break
+    case 'GmActorTypesTagForm':
+        tagsString = Utils.getSetting('gmActorTypes')
+        availableLabel = game.i18n.localize('changeLog.tagForm.gmActorTypes.label.available')
+        availableTags = ACTOR_TYPES
+        break
+    case 'GmPropertiesTagForm':
+        tagsString = Utils.getSetting('gmProperties')
+        availableLabel = game.i18n.localize('changeLog.tagForm.gmProperties.label.available')
+        availableTags = PROPERTIES
+        break
+    case 'PlayerPropertiesTagForm':
+        tagsString = Utils.getSetting('playerProperties')
+        availableLabel = game.i18n.localize('changeLog.tagForm.playerProperties.label.available')
+        availableTags = PROPERTIES
+        break
+    default:
+        return
+    }
+    const tagsArray = (tagsString) ? tagsString.split(DELIMITER) : []
     tags.selected = tagsArray.map(id => { return { id, value: Utils.getChangeProperty(id) } })
-    tags.available = PROPERTIES.map(id => { return { id, value: Utils.getChangeProperty(id) } })
+    tags.available = availableTags.map(id => { return { id, value: Utils.getChangeProperty(id) } })
 
     const $tagFilter = html.find('input[class="change-log-taginput"]')
 
@@ -123,44 +154,118 @@ Hooks.on('renderTagForm', (app, html, options) => {
         TagForm.tagify.dropdown.show() // load the list
         const dropdownLabelElement = document.createElement('div')
         dropdownLabelElement.classList.add('change-log-form-label')
-        dropdownLabelElement.innerHTML = game.i18n.localize('changeLog.tagForm.availableProperties')
+        dropdownLabelElement.innerHTML = availableLabel
         TagForm.tagify.DOM.scope.parentNode.appendChild(dropdownLabelElement)
         TagForm.tagify.DOM.scope.parentNode.appendChild(TagForm.tagify.DOM.dropdown)
     }
 })
 
-export class GmTagForm extends TagForm {
+export class EveryoneActorTypesTagForm extends TagForm {
     static get defaultOptions () {
         return mergeObject(super.defaultOptions, {
-            title: game.i18n.localize('changeLog.tagForm.gm.title')
+            title: game.i18n.localize('changeLog.tagForm.everyoneActorTypes.title')
         })
     }
 
     getData (options) {
         return {
-            description: game.i18n.localize('changeLog.tagForm.gm.description')
+            description: game.i18n.localize('changeLog.tagForm.everyoneActorTypes.description'),
+            label: {
+                clear: game.i18n.localize('changeLog.tagForm.everyoneActorTypes.label.clear'),
+                selected: game.i18n.localize('changeLog.tagForm.everyoneActorTypes.label.selected')
+            }
         }
     }
 
     async _updateObject () {
-        super.updateObject('gmOnlyProperties')
+        super.updateObject('everyoneActorTypes')
     }
 }
 
-export class EveryoneTagForm extends TagForm {
+export class EveryonePropertiesTagForm extends TagForm {
     static get defaultOptions () {
         return mergeObject(super.defaultOptions, {
-            title: game.i18n.localize('changeLog.tagForm.everyone.title')
+            title: game.i18n.localize('changeLog.tagForm.everyoneProperties.title')
         })
     }
 
     getData (options) {
         return {
-            description: game.i18n.localize('changeLog.tagForm.everyone.description')
+            description: game.i18n.localize('changeLog.tagForm.everyoneProperties.description'),
+            label: {
+                clear: game.i18n.localize('changeLog.tagForm.everyoneProperties.label.clear'),
+                selected: game.i18n.localize('changeLog.tagForm.everyoneProperties.label.selected')
+            }
         }
     }
 
     async _updateObject () {
         super.updateObject('everyoneProperties')
+    }
+}
+
+export class GmActorTypesTagForm extends TagForm {
+    static get defaultOptions () {
+        return mergeObject(super.defaultOptions, {
+            title: game.i18n.localize('changeLog.tagForm.gmActorTypes.title')
+        })
+    }
+
+    getData (options) {
+        return {
+            description: game.i18n.localize('changeLog.tagForm.gmActorTypes.description'),
+            label: {
+                clear: game.i18n.localize('changeLog.tagForm.gmActorTypes.label.clear'),
+                selected: game.i18n.localize('changeLog.tagForm.gmActorTypes.label.selected')
+            }
+        }
+    }
+
+    async _updateObject () {
+        super.updateObject('gmActorTypes')
+    }
+}
+
+export class GmPropertiesTagForm extends TagForm {
+    static get defaultOptions () {
+        return mergeObject(super.defaultOptions, {
+            title: game.i18n.localize('changeLog.tagForm.gmProperties.title')
+        })
+    }
+
+    getData (options) {
+        return {
+            description: game.i18n.localize('changeLog.tagForm.gmProperties.description'),
+            label: {
+                clear: game.i18n.localize('changeLog.tagForm.gmProperties.label.clear'),
+                selected: game.i18n.localize('changeLog.tagForm.gmProperties.label.selected')
+            }
+        }
+    }
+
+    async _updateObject () {
+        super.updateObject('gmProperties')
+    }
+}
+
+export class PlayerPropertiesTagForm extends TagForm {
+    static get defaultOptions () {
+        return mergeObject(super.defaultOptions, {
+            title: game.i18n.localize('changeLog.tagForm.playerProperties.title')
+        })
+    }
+
+    getData (options) {
+        return {
+            description: game.i18n.localize('changeLog.tagForm.playerProperties.description'),
+            label: {
+                clear: game.i18n.localize('changeLog.tagForm.playerProperties.label.clear'),
+                selected: game.i18n.localize('changeLog.tagForm.playerProperties.label.selected')
+            }
+        }
+    }
+
+    async _updateObject () {
+        super.updateObject('playerProperties')
     }
 }

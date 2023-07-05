@@ -1,3 +1,10 @@
+export const ACTOR_TYPES = [
+    'character',
+    'npc',
+    'vehicle',
+    'group'
+]
+
 export const PROPERTIES = [
     'activeEffect.deleted',
     'activeEffect.disabled',
