@@ -26,7 +26,7 @@ Hooks.on('preUpdateItem', async (item, data, options, userId) => {
 
 Hooks.on('renderChatMessage', async (chatMessage, html) => {
     if (!chatMessage.flags.changeLog) return
-    if (chatMessage.whisper.length && !chatMessage.whisper.includes(game.user.id)) { html.addClass('change-log-card-hidden') }
+    if (chatMessage.whisper.length && !chatMessage.whisper.includes(game.user.id)) { html.css('display', 'none') }
 })
 
 export class ChangeLog {
