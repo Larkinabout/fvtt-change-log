@@ -15,4 +15,6 @@ export const BOOLEAN_ICON = {
     true: '<i class="fa fa-check"></i>'
 }
 
+export const EMPTY_ICON = '<i class="fa-solid fa-empty-set"></i>'
+
 export const DELIMITER = ';'

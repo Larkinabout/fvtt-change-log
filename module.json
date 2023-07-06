@@ -26,6 +26,11 @@
             "lang": "en",
             "name": "English",
             "path": "languages/dnd5e/en.json"
+        },
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "languages/swade/en.json"
         }
     ],
     "url": "This is auto replaced",

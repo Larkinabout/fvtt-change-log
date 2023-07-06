@@ -1,4 +1,4 @@
-import { BOOLEAN_ICON, MODULE } from './constants.js'
+import { BOOLEAN_ICON, EMPTY_ICON, MODULE } from './constants.js'
 
 /**
  * Console logger
@@ -30,7 +30,7 @@ export class Logger {
 export class Utils {
     static getChangeValue (value) {
         if ([true, false].includes(value)) return BOOLEAN_ICON[value]
-        if (value === null) return game.i18n.localize('changeLog.empty')
+        if (value === null || value === undefined) return EMPTY_ICON
         return value
     }
 
