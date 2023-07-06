@@ -29,8 +29,9 @@ A Foundry VTT module to log changes to the chat log.
 Change Log is intended to be system-agnostic, however only the systems listed are currently supported with pre-populated lists and friendly property names:
 
 - [D&D 5e](https://foundryvtt.com/packages/dnd5e)
+- [Savage Worlds Adventure Edition](https://foundryvtt.com/packages/swade/)
 
-If you would like your system to be supported, please raise a feature request or, better yet, create a pull request.
+If you would like your system to be supported or a property is not listed for a supported system, please raise a feature request or, better yet, create a pull request.
 
 # How to Use
 ## For supported systems
@@ -40,7 +41,7 @@ If you would like your system to be supported, please raise a feature request or
 4. Click the properties in **Available Properties** to add them to the **Selected Properties**.
 5. Click **Accept**. 
 6. Open **Actor Types for GM**.
-7. Click the types in **Available Type** to add them to the **Selected Types**.
+7. Click the types in **Available Types** to add them to the **Selected Types**.
 8. Click **Accept**.
 9. Click **Save Changes**
 
