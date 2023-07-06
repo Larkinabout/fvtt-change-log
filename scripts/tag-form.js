@@ -147,8 +147,11 @@ Hooks.on('renderTagForm', (app, html, options) => {
         if (tags.selected) TagForm.tagify.addTags(tags.selected)
 
         // "remove all tags" button event listener
-        const clearBtn = html.find('#change-log-clear-tags')
-        clearBtn.on('click', TagForm.tagify.removeAllTags.bind(TagForm.tagify))
+        const unselectAllButton = html.find('#change-log-unselect-all')
+        unselectAllButton.on('click', TagForm.tagify.removeAllTags.bind(TagForm.tagify))
+
+        const selectAllButton = html.find('#change-log-select-all')
+        selectAllButton.on('click', () => { TagForm.tagify.addTags(tags.available, true, true) })
 
         TagForm.tagify.dropdown.show() // load the list
         const dropdownLabelElement = document.createElement('div')
@@ -171,6 +174,7 @@ export class EveryoneActorTypesTagForm extends TagForm {
             description: game.i18n.localize('changeLog.tagForm.everyoneActorTypes.description'),
             label: {
                 clear: game.i18n.localize('changeLog.tagForm.everyoneActorTypes.label.clear'),
+                selectAll: game.i18n.localize('changeLog.tagForm.everyoneActorTypes.label.selectAll'),
                 selected: game.i18n.localize('changeLog.tagForm.everyoneActorTypes.label.selected')
             }
         }
@@ -192,7 +196,6 @@ export class EveryonePropertiesTagForm extends TagForm {
         return {
             description: game.i18n.localize('changeLog.tagForm.everyoneProperties.description'),
             label: {
-                clear: game.i18n.localize('changeLog.tagForm.everyoneProperties.label.clear'),
                 selected: game.i18n.localize('changeLog.tagForm.everyoneProperties.label.selected')
             }
         }
@@ -214,7 +217,6 @@ export class GmActorTypesTagForm extends TagForm {
         return {
             description: game.i18n.localize('changeLog.tagForm.gmActorTypes.description'),
             label: {
-                clear: game.i18n.localize('changeLog.tagForm.gmActorTypes.label.clear'),
                 selected: game.i18n.localize('changeLog.tagForm.gmActorTypes.label.selected')
             }
         }
@@ -236,7 +238,6 @@ export class GmPropertiesTagForm extends TagForm {
         return {
             description: game.i18n.localize('changeLog.tagForm.gmProperties.description'),
             label: {
-                clear: game.i18n.localize('changeLog.tagForm.gmProperties.label.clear'),
                 selected: game.i18n.localize('changeLog.tagForm.gmProperties.label.selected')
             }
         }
@@ -258,7 +259,6 @@ export class PlayerPropertiesTagForm extends TagForm {
         return {
             description: game.i18n.localize('changeLog.tagForm.playerProperties.description'),
             label: {
-                clear: game.i18n.localize('changeLog.tagForm.playerProperties.label.clear'),
                 selected: game.i18n.localize('changeLog.tagForm.playerProperties.label.selected')
             }
         }

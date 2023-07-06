@@ -1,18 +1,21 @@
 <div class="flexrow">
     <form class="categories flexcol">
         <div class="scrollable">
-            <section>
+            <section class="change-log-form-col-group">
                 <div>{{label.selected}}</div>
-                <div>
+                <div class="change-log-form-col-group">
                     <input
                         name="change-log-taginput"
                         class="change-log-taginput"
                         placeholder="{{placeholder}}"
                     />
                 </div>
-                <div>
-                    <button type="button" id="change-log-clear-tags" class="tags--removeAllBtn">
-                        <i class="fa-duotone fa-filter-circle-xmark"></i>{{label.clear}}
+                <div class="change-log-form-row-group">
+                    <button type="button" id="change-log-select-all"class="change-log-form-light-button">
+                        <i class="fa-solid fa-filter"></i>{{localize "changeLog.tagForm.selectAll"}}
+                    </button>
+                    <button type="button" id="change-log-unselect-all" class="change-log-form-light-button tags--removeAllBtn">
+                        <i class="fa-regular fa-filter-slash"></i>{{localize "changeLog.tagForm.unselectAll"}}
                     </button>
                 </div>
             </section>

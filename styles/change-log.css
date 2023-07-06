@@ -107,10 +107,9 @@
     background: var(--color-border-highlight-alt);
 }
 
-#change-log-clear-tags {
+.change-log-form-light-button {
     background: rgba(255, 255, 240, 0.8);
     border: 1px solid var(--color-border-light-primary);
-    margin-top: 2px;
 }
 
 .window-app.change-log-tag-form .window-content {
@@ -135,6 +134,18 @@
 .change-log-tag-form .categories footer {
     margin: 0.5rem;
     flex: 0;
+}
+
+.change-log-form-col-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.change-log-form-row-group {
+    display: flex;
+    flex-direction: row;
+    gap: 0.2rem;
 }
 
 .change-log-tags-dropdown .tagify__dropdown__wrapper {
@@ -173,9 +184,5 @@
 }
 
 .change-log-tags-dropdown .tagify__dropdown__item--hidden {
-    display: none;
-}
-
-.change-log-card-hidden {
     display: none;
 }

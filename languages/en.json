@@ -32,13 +32,14 @@
         "tagForm": {
             "accept": "Accept",
             "cancel": "Cancel",
+            "unselectAll": "Unselect All",
+            "selectAll": "Select All",
             "everyoneActorTypes": {
                 "description": "Click items in the Available Types box to select them or type into the Selected Types.",
                 "title": "Actor Types for Everyone",
                 "label": {
                     "available": "Available Types",
-                    "selected": "Selected Types",
-                    "clear": "Clear Selected Types"
+                    "selected": "Selected Types"
                 }
             },
             "everyoneProperties": {
@@ -46,8 +47,7 @@
                 "title": "Changes for Everyone",
                 "label": {
                     "available": "Available Properties",
-                    "selected": "Selected Properties",
-                    "clear": "Clear Selected Properties"
+                    "selected": "Selected Properties"
                 }
             },
             "gmActorTypes": {
@@ -55,8 +55,7 @@
                 "title": "Actor Types for GM",
                 "label": {
                     "available": "Available Types",
-                    "selected": "Selected Types",
-                    "clear": "Clear Selected Types"
+                    "selected": "Selected Types"
                 }
             },
             "gmProperties": {
@@ -64,8 +63,7 @@
                 "title": "Changes for GM",
                 "label": {
                     "available": "Available Properties",
-                    "selected": "Selected Properties",
-                    "clear": "Clear Selected Properties"
+                    "selected": "Selected Properties"
                 }
             },
             "playerProperties": {
@@ -73,8 +71,7 @@
                 "title": "Changes for Player",
                 "label": {
                     "available": "Available Properties",
-                    "selected": "Selected Properties",
-                    "clear": "Clear Selected Properties"
+                    "selected": "Selected Properties"
                 }
             }
         }
