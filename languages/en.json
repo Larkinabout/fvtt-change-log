@@ -31,6 +31,10 @@
             "showRecipients": {
                 "name": "Show Recipients",
                 "hint": "Choose whether to show recipients on the chat card"
+            },
+            "showSender": {
+                "name": "Show Sender",
+                "hint": "Choose whether to show sender on the chat card"
             }
         },
         "tagForm": {

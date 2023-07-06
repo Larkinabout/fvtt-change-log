@@ -1,3 +1,4 @@
+import { ACTOR_TYPES as CYPHERSYSTEM_ACTOR_TYPES, PROPERTIES as CYPHERSYSTEM_PROPERTIES } from './properties/cyphersystem/properties.js'
 import { ACTOR_TYPES as DND5E_ACTOR_TYPES, PROPERTIES as DND5E_PROPERTIES } from './properties/dnd5e/properties.js'
 import { ACTOR_TYPES as SWADE_ACTOR_TYPES, PROPERTIES as SWADE_PROPERTIES } from './properties/swade/properties.js'
 
@@ -10,6 +11,8 @@ Hooks.on('init', () => {
 
     function getActorTypes () {
         switch (game.system.id) {
+        case 'cyphersystem':
+            return CYPHERSYSTEM_ACTOR_TYPES
         case 'dnd5e':
             return DND5E_ACTOR_TYPES
         case 'swade':
@@ -19,6 +22,8 @@ Hooks.on('init', () => {
 
     function getProperties () {
         switch (game.system.id) {
+        case 'cyphersystem':
+            return CYPHERSYSTEM_PROPERTIES
         case 'dnd5e':
             return DND5E_PROPERTIES
         case 'swade':

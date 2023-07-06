@@ -28,6 +28,11 @@ Hooks.on('renderChatMessage', async (chatMessage, html) => {
     if (!chatMessage.flags.changeLog) return
     if (chatMessage.whisper.length && !chatMessage.whisper.includes(game.user.id)) { html.css('display', 'none') }
     if (!game.changeLog.showRecipients) { html.find('.whisper-to')?.remove() }
+    if (!game.changeLog.showSender) {
+        html.find('.message-sender')?.remove()
+        html.css('position', 'relative')
+        html.find('.message-header')?.css({ position: 'absolute', right: '6px' })
+    }
 })
 
 export class ChangeLog {
@@ -39,7 +44,8 @@ export class ChangeLog {
             this.getGmActorTypes(),
             this.getGmProperties(),
             this.getPlayerProperties(),
-            this.getShowRecipients()
+            this.getShowRecipients(),
+            this.getShowSender()
         ])
     }
 
@@ -65,6 +71,10 @@ export class ChangeLog {
 
     async getShowRecipients () {
         this.showRecipients = await Utils.getSetting('showRecipients')
+    }
+
+    async getShowSender () {
+        this.showSender = await Utils.getSetting('showSender')
     }
 
     async getPreUpdateData (documentType, preUpdateData) {

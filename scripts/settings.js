@@ -52,6 +52,16 @@ export const registerSettings = function () {
         scope: 'world'
     })
 
+    game.settings.register(MODULE.ID, 'showSender', {
+        name: game.i18n.localize('changeLog.settings.showSender.name'),
+        hint: game.i18n.localize('changeLog.settings.showSender.hint'),
+        scope: 'world',
+        config: true,
+        type: Boolean,
+        default: true,
+        onChange: () => { game.changeLog.getShowSender() }
+    })
+
     game.settings.register(MODULE.ID, 'showRecipients', {
         name: game.i18n.localize('changeLog.settings.showRecipients.name'),
         hint: game.i18n.localize('changeLog.settings.showRecipients.hint'),

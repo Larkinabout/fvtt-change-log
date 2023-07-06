@@ -25,6 +25,11 @@
         {
             "lang": "en",
             "name": "English",
+            "path": "languages/cyphersystem/en.json"
+        },
+        {
+            "lang": "en",
+            "name": "English",
             "path": "languages/dnd5e/en.json"
         },
         {
