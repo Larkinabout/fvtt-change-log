@@ -1,4 +1,4 @@
-import { BOOLEAN_ICON, DELIMITER, TEMPLATE } from './constants.js'
+import { DELIMITER, TEMPLATE } from './constants.js'
 import { registerSettings } from './settings.js'
 import { Utils } from './utils.js'
 
@@ -27,6 +27,7 @@ Hooks.on('preUpdateItem', async (item, data, options, userId) => {
 Hooks.on('renderChatMessage', async (chatMessage, html) => {
     if (!chatMessage.flags.changeLog) return
     if (chatMessage.whisper.length && !chatMessage.whisper.includes(game.user.id)) { html.css('display', 'none') }
+    if (!game.changeLog.showRecipients) { html.find('.whisper-to')?.remove() }
 })
 
 export class ChangeLog {
@@ -37,7 +38,8 @@ export class ChangeLog {
             this.getEveryoneProperties(),
             this.getGmActorTypes(),
             this.getGmProperties(),
-            this.getPlayerProperties()
+            this.getPlayerProperties(),
+            this.getShowRecipients()
         ])
     }
 
@@ -59,6 +61,10 @@ export class ChangeLog {
 
     async getPlayerProperties () {
         this.playerProperties = await Utils.getSetting('playerProperties')?.split(DELIMITER) ?? []
+    }
+
+    async getShowRecipients () {
+        this.showRecipients = await Utils.getSetting('showRecipients')
     }
 
     async getPreUpdateData (documentType, preUpdateData) {

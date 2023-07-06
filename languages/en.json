@@ -27,6 +27,10 @@
                 "name": "Changes for Player",
                 "label": "Changes for Player",
                 "hint": "Changes to log for the player"
+            },
+            "showRecipients": {
+                "name": "Show Recipients",
+                "hint": "Choose whether to show recipients on the chat card"
             }
         },
         "tagForm": {

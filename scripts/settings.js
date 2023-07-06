@@ -52,6 +52,16 @@ export const registerSettings = function () {
         scope: 'world'
     })
 
+    game.settings.register(MODULE.ID, 'showRecipients', {
+        name: game.i18n.localize('changeLog.settings.showRecipients.name'),
+        hint: game.i18n.localize('changeLog.settings.showRecipients.hint'),
+        scope: 'world',
+        config: true,
+        type: Boolean,
+        default: true,
+        onChange: () => { game.changeLog.getShowRecipients() }
+    })
+
     game.settings.register(MODULE.ID, 'gmProperties', {
         name: 'GM Properties',
         scope: 'world',
