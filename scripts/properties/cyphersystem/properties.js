@@ -11,6 +11,7 @@ export const PROPERTIES = [
     'activeEffect.deleted',
     'activeEffect.disabled',
     'actor.name',
+    'actor.inCombat',
     'actor.system.abilities.preparedSpells',
     'actor.system.basic.advancement.edge',
     'actor.system.basic.advancement.effort',
@@ -56,4 +57,7 @@ export const PROPERTIES = [
     'item.system.basic.type',
     'item.system.basic.totalModified',
     'item.system.weight'
+]
+
+export const DERIVED_PROPERTIES = [
 ]

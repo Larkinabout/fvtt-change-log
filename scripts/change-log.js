@@ -1,4 +1,5 @@
 import { DELIMITER, TEMPLATE } from './constants.js'
+import { DERIVED_PROPERTIES } from './system-handler.js'
 import { registerSettings } from './settings.js'
 import { Utils } from './utils.js'
 
@@ -6,6 +7,10 @@ Hooks.on('init', () => {
     registerSettings()
     game.changeLog = new ChangeLog()
     game.changeLog.init()
+})
+
+Hooks.on('preCreateCombatant', async (combatant, data, options, userId) => {
+    await game.changeLog.getPreCreateCombatant({ combatant, data, options, userId })
 })
 
 Hooks.on('preUpdateActiveEffect', async (activeEffect, data, options, userId) => {
@@ -24,6 +29,16 @@ Hooks.on('preUpdateItem', async (item, data, options, userId) => {
     await game.changeLog.getPreUpdateData('item', { document: item, data, options, userId })
 })
 
+Hooks.on('updateActor', async (actor, data, options, userId) => {
+    if (game.userId !== data._stats?.lastModifiedBy) return
+    await game.changeLog.getUpdateData('actor', { document: actor, data, options, userId })
+})
+
+Hooks.on('updateItem', async (item, data, options, userId) => {
+    if (game.userId !== data._stats?.lastModifiedBy) return
+    await game.changeLog.getUpdateData('item', { document: item, data, options, userId })
+})
+
 Hooks.on('renderChatMessage', async (chatMessage, html) => {
     if (!chatMessage.flags.changeLog) return
     if (chatMessage.whisper.length && !chatMessage.whisper.includes(game.user.id)) { html.css('display', 'none') }
@@ -36,9 +51,13 @@ Hooks.on('renderChatMessage', async (chatMessage, html) => {
 })
 
 export class ChangeLog {
+    constructor () {
+        this.derivedPropertiesMap = new Map()
+    }
+
     async init () {
         Promise.all([
-            loadTemplates([TEMPLATE.CHAT_CARD]),
+            loadTemplates([TEMPLATE.CHAT_CARD, TEMPLATE.TAG_FORM]),
             this.getEveryoneActorTypes(),
             this.getEveryoneProperties(),
             this.getGmActorTypes(),
@@ -77,13 +96,58 @@ export class ChangeLog {
         this.showSender = await Utils.getSetting('showSender')
     }
 
+    async getPreCreateCombatant (preCreateCombatantData) {
+        const { combatant, userId } = preCreateCombatantData
+
+        const actor = game.actors.get(combatant.actorId)
+        const documentType = 'actor'
+        const key = 'inCombat'
+        const modifiedByName = game.users.get(userId)?.name
+
+        const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor.type, key)
+
+        if (!isEveryone && !isGm && !isPlayer) return
+
+        const templateData = {
+            document1Name: actor.name,
+            document2Name: null,
+            property: `${documentType}.${key}`,
+            modifiedByName,
+            oldValue: actor.inCombat,
+            newValue: true
+        }
+
+        const whisperData = {
+            actor,
+            isEveryone,
+            isGm,
+            isPlayer
+        }
+
+        this.#createChatMessage(templateData, whisperData)
+    }
+
     async getPreUpdateData (documentType, preUpdateData) {
-        const { document, data, options, userId } = preUpdateData
+        const { document, data, userId } = preUpdateData
 
         const parentDocument = (documentType !== 'actor' && document.parent?.documentName === 'Actor')
             ? document.parent
             : null
         const actor = parentDocument ?? document
+
+        const derivedProperties = DERIVED_PROPERTIES.map(derivedProperty => {
+            const obj = (derivedProperty.split('.')[0] === 'actor') ? actor : document
+            const oldValue = Utils.getValueByDotNotation(obj, Utils.getPropertyKey(derivedProperty))
+            return { property: derivedProperty, oldValue }
+        })
+
+        if (derivedProperties.length) {
+            if (!this.derivedPropertiesMap.has(document.id)) {
+                this.derivedPropertiesMap.set(document.id, derivedProperties)
+            } else {
+                this.derivedPropertiesMap.get(document.id).push(...derivedProperties)
+            }
+        }
 
         // eslint-disable-next-line no-undef
         const flattenedObjects = await flattenObject(data)
@@ -98,7 +162,7 @@ export class ChangeLog {
             const templateData = {
                 document1Name: (parentDocument) ? parentDocument.name : document.name,
                 document2Name: (parentDocument) ? document.name : null,
-                propertyKey: `${documentType}.${key}`,
+                property: `${documentType}.${key}`,
                 modifiedByName,
                 oldValue: Utils.getValueByDotNotation(document, key),
                 newValue: Utils.getValueByDotNotation(data, key)
@@ -115,6 +179,53 @@ export class ChangeLog {
         }
     }
 
+    async getUpdateData (documentType, updateData) {
+        const { document, userId } = updateData
+        const derivedProperties = this.derivedPropertiesMap.get(document.id) ?? []
+
+        if (!derivedProperties.length) return
+
+        const parentDocument = (documentType !== 'actor' && document.parent?.documentName === 'Actor')
+            ? document.parent
+            : null
+        const actor = parentDocument ?? document
+
+        const modifiedByName = game.users.get(userId)?.name
+
+        for (const derivedProperty of derivedProperties) {
+            const { property, oldValue } = derivedProperty
+
+            const key = Utils.getPropertyKey(property)
+            const propertyDocumentType = Utils.getPropertyDocumentType(property)
+            const obj = (propertyDocumentType === 'actor') ? actor : document
+            const newValue = Utils.getValueByDotNotation(obj, key)
+
+            const { isEveryone, isGm, isPlayer } = this.#getAudience(propertyDocumentType, actor.type, key)
+
+            if (!isEveryone && !isGm && !isPlayer) continue
+
+            const templateData = {
+                document1Name: (propertyDocumentType === 'actor' && parentDocument) ? parentDocument.name : document.name,
+                document2Name: (propertyDocumentType !== 'actor' && parentDocument) ? document.name : null,
+                property: `${propertyDocumentType}.${key}`,
+                modifiedByName,
+                oldValue,
+                newValue
+            }
+
+            const whisperData = {
+                actor,
+                isEveryone,
+                isGm,
+                isPlayer
+            }
+
+            this.#createChatMessage(templateData, whisperData)
+        }
+
+        this.derivedPropertiesMap.delete(document.id)
+    }
+
     async getDeleteData (documentType, deleteData) {
         const { document, userId } = deleteData
         const key = 'deleted'
@@ -128,7 +239,7 @@ export class ChangeLog {
         const templateData = {
             document1Name: (parentDocument) ? parentDocument.name : document.name,
             document2Name: (parentDocument) ? document.name : null,
-            propertyKey: `${documentType}.${key}`,
+            property: `${documentType}.${key}`,
             modifiedByName: game.users.get(userId)?.name,
             oldValue: null,
             newValue: true
@@ -169,7 +280,7 @@ export class ChangeLog {
     }
 
     async #createChatMessage (templateData, whisperData) {
-        const { document1Name, document2Name, propertyKey, oldValue, newValue, modifiedByName } = templateData
+        const { document1Name, document2Name, property, oldValue, newValue, modifiedByName } = templateData
         const { actor, isEveryone, isGm, isPlayer } = whisperData
 
         if (this.#isNotValidChange({ oldValue, newValue })) return
@@ -179,9 +290,9 @@ export class ChangeLog {
             {
                 document1Name,
                 document2Name,
-                property: Utils.getChangeProperty(propertyKey),
-                oldValue: Utils.getChangeValue(oldValue),
-                newValue: Utils.getChangeValue(newValue),
+                propertyName: Utils.getPropertyName(property),
+                oldValue: Utils.getPropertyValue(oldValue),
+                newValue: Utils.getPropertyValue(newValue),
                 tooltip: `<div>${game.i18n.localize('changeLog.modifiedBy')}: ${modifiedByName}</div>`
             }
         )

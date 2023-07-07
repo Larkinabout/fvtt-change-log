@@ -28,15 +28,24 @@ export class Logger {
 }
 
 export class Utils {
-    static getChangeValue (value) {
+    static getPropertyValue (value) {
         if ([true, false].includes(value)) return BOOLEAN_ICON[value]
         if (value === null || value === undefined) return EMPTY_ICON
+        if (typeof value === 'number' && value - Math.floor(value) !== 0) return Math.round(value * 10) / 10
         return value
     }
 
-    static getChangeProperty (key) {
+    static getPropertyName (key) {
         const label = game.i18n.localize(`changeLog.${game.system.id}.${key}`)
         return (!label.startsWith('changeLog')) ? label : key
+    }
+
+    static getPropertyDocumentType (property) {
+        return property.split('.')[0]
+    }
+
+    static getPropertyKey (property) {
+        return property.split('.').slice(1).join('.')
     }
 
     static getValueByDotNotation (obj, str) {

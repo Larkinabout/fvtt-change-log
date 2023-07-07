@@ -10,6 +10,7 @@ export const PROPERTIES = [
     'activeEffect.disabled',
     'actor.flags.dnd5e.initiativeAlert',
     'actor.flags.dnd5e.initiativeAdv',
+    'actor.inCombat',
     'actor.name',
     'actor.system.abilities.cha.bonuses.check',
     'actor.system.abilities.cha.bonuses.save',
@@ -39,6 +40,10 @@ export const PROPERTIES = [
     'actor.system.attributes.ac.flat',
     'actor.system.attributes.death.success',
     'actor.system.attributes.death.failure',
+    'actor.system.attributes.encumbrance.value',
+    'actor.system.attributes.encumbrance.max',
+    'actor.system.attributes.encumbrance.pct',
+    'actor.system.attributes.encumbrance.encumbered',
     'actor.system.attributes.exhaustion',
     'actor.system.attributes.hp.bonuses.level',
     'actor.system.attributes.hp.bonuses.overall',
@@ -68,6 +73,12 @@ export const PROPERTIES = [
     'actor.system.details.alignment',
     'actor.system.details.race',
     'actor.system.details.xp.value',
+    'actor.system.resources.lair.value',
+    'actor.system.resources.lair.initiative',
+    'actor.system.resources.legact.value',
+    'actor.system.resources.legact.max',
+    'actor.system.resources.legres.value',
+    'actor.system.resources.legres.max',
     'actor.system.resources.primary.max',
     'actor.system.resources.primary.value',
     'actor.system.resources.secondary.max',
@@ -173,4 +184,11 @@ export const PROPERTIES = [
     'item.system.uses.max',
     'item.system.uses.value',
     'item.system.weight'
+]
+
+export const DERIVED_PROPERTIES = [
+    'actor.system.attributes.encumbrance.value',
+    'actor.system.attributes.encumbrance.max',
+    'actor.system.attributes.encumbrance.pct',
+    'actor.system.attributes.encumbrance.encumbered'
 ]

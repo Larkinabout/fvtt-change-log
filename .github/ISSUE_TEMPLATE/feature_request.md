@@ -11,8 +11,9 @@ assignees: ''
 A description of your idea.
 
 **Versions**
-- Token Action HUD System: [e.g. token-action-hud-dnd5e]
-- System: [e.g. dnd5e]
+- Change Log: [e.g. 1.0.0]
+- System: [e.g. dnd5e 2.0.0]
+- Foundry VTT: [e.g. 11.305]
 
 **Additional context**
 Any additional context.

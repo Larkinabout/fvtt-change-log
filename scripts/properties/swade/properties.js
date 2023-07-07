@@ -7,6 +7,9 @@ export const ACTOR_TYPES = [
 export const PROPERTIES = [
     'activeEffect.deleted',
     'activeEffect.disabled',
+    'actor.hasArcaneBackground',
+    'actor.inCombat',
+    'actor.isEncumbered',
     'actor.name',
     'actor.system.advances.mode',
     'actor.system.advances.rank',
@@ -80,10 +83,12 @@ export const PROPERTIES = [
     'actor.system.wounds.max',
     'actor.system.wounds.ignored',
     'actor.system.woundsOrFatigue.ignored',
-    'actor.hasArcaneBackground',
-    'actor.inCombat',
-    'actor.isEncumbered',
     'item.system.equipped',
     'item.system.quantity',
     'item.system.weight'
+]
+
+export const DERIVED_PROPERTIES = [
+    'actor.hasArcaneBackground',
+    'actor.isEncumbered'
 ]

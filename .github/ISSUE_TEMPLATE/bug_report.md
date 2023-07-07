@@ -17,11 +17,10 @@ A description of the bug and any screenshots.
 4. See error
 
 **Versions:**
-- Token Action HUD Core: [e.g. 0 1.0]
-- Token Action HUD System: [e.g. token-action-hud-dnd5e 0.1.0]
-- System: [e.g. dnd5e 2.0.3]
-- Foundry VTT: [e.g. 10.291]
-- Browser: [e.g. Google Chrome 108.0.5359.124]
+- Change Log: [e.g. 1.0.0]
+- System: [e.g. dnd5e 2.0.0]
+- Foundry VTT: [e.g. 11.305]
+- Browser: [e.g. Google Chrome 114.0.5735.199]
 
 **Additional context**
 Any additional context.

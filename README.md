@@ -28,6 +28,7 @@ A Foundry VTT module to log changes to the chat log.
 # Supported Systems
 Change Log is intended to be system-agnostic, however only the systems listed are currently supported with pre-populated lists and friendly property names:
 
+- [Cypher System](https://foundryvtt.com/packages/cyphersystem)
 - [D&D 5e](https://foundryvtt.com/packages/dnd5e)
 - [Savage Worlds Adventure Edition](https://foundryvtt.com/packages/swade/)
 
@@ -65,4 +66,6 @@ If you would like your system to be supported or a property is not listed for a 
 
 ## Wishlist
 - Log changes to a separate tab/window.
+- Group simultaneous changes into one chat card.
 - Replace current method of hiding chat messages.
+- Allow users to define custom properties to appear in lists and with friendly names.

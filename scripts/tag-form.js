@@ -1,5 +1,5 @@
 import { DELIMITER, MODULE, TEMPLATE } from './constants.js'
-import { ACTOR_TYPES, PROPERTIES } from './properties.js'
+import { ACTOR_TYPES, PROPERTIES } from './system-handler.js'
 import { Utils } from './utils.js'
 
 export class TagForm extends FormApplication {
@@ -109,8 +109,8 @@ Hooks.on('renderTagForm', (app, html, options) => {
         return
     }
     const selectedTags = (tagsString) ? tagsString.split(DELIMITER) : []
-    tags.selected = (selectedTags) ? selectedTags.map(id => { return { id, value: Utils.getChangeProperty(id) } }) : null
-    tags.available = (availableTags) ? availableTags.map(id => { return { id, value: Utils.getChangeProperty(id) } }) : null
+    tags.selected = (selectedTags) ? selectedTags.map(id => { return { id, value: Utils.getPropertyName(id) } }) : null
+    tags.available = (availableTags) ? availableTags.map(id => { return { id, value: Utils.getPropertyName(id) } }) : null
 
     const $tagFilter = html.find('input[class="change-log-taginput"]')
 

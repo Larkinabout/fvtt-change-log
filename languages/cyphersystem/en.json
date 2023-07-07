@@ -10,6 +10,7 @@
             "activeEffect.deleted": "Active Effect Deleted",
             "activeEffect.disabled": "Active Effect Disabled",
             "actor.name": "Name",
+            "actor.inCombat": "In Combat",
             "actor.system.abilities.preparedSpells": "Prepared Spells",
             "actor.system.basic.advancement.edge": "Edge Advancement",
             "actor.system.basic.advancement.effort": "Effort Advancement",
