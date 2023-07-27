@@ -28,6 +28,7 @@ A Foundry VTT module to log changes to the chat log.
 # Supported Systems
 Change Log is intended to be system-agnostic, however only the systems listed are currently supported with pre-populated lists and friendly property names:
 
+- [Archmage / 13th Age](https://foundryvtt.com/packages/archmage)
 - [Cypher System](https://foundryvtt.com/packages/cyphersystem)
 - [D&D 5e](https://foundryvtt.com/packages/dnd5e)
 - [Savage Worlds Adventure Edition](https://foundryvtt.com/packages/swade/)
