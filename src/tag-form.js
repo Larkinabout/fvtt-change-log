@@ -1,6 +1,8 @@
 import { DELIMITER, MODULE, TEMPLATE } from './constants.js'
 import { ACTOR_TYPES, PROPERTIES } from './system-handler.js'
 import { Utils } from './utils.js'
+import DragSort from '@yaireo/dragsort'
+import Tagify from '@yaireo/tagify'
 
 export class TagForm extends FormApplication {
     tagify = null

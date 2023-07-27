@@ -1,5 +1,5 @@
+.idea/
+dist/
 node_modules/*
-.eslintrc.js
-package-lock.json
-package.json
-.eslintrc.json
+index.js
+index.js.map

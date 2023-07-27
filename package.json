@@ -1,0 +1,37 @@
+{
+  "name": "fvtt-change-log",
+  "version": "0.3.0",
+  "description": "A Foundry VTT module to log changes to the chat log",
+  "main": "scripts/change-log.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "eslint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Larkinabout/fvtt-change-log.git"
+  },
+  "author": "Larkinabout",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Larkinabout/fvtt-change-log/issues"
+  },
+  "homepage": "https://github.com/Larkinabout/fvtt-change-log#readme",
+  "dependencies": {
+    "@yaireo/dragsort": "^1.3.1",
+    "@yaireo/tagify": "^4.17.8",
+    "create-vite": "^4.4.1",
+    "rollup": "^3.26.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.45.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^16.0.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "vite": "^4.4.7"
+  }
+}

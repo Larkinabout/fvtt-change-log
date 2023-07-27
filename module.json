@@ -6,7 +6,7 @@
     "library": "false",
     "compatibility": {
         "minimum": 10,
-        "verified": 11.305
+        "verified": 11.306
     },
     "authors": [
         {
@@ -14,13 +14,22 @@
             "url": "https://github.com/Larkinabout"
         }
     ],
-    "esmodules": ["scripts/change-log.js"],
-    "styles": ["styles/change-log.css"],
+    "esmodules": ["dist/change-log.js"],
+    "styles": [
+        "styles/change-log.css",
+        "styles/lib/tagify/tagify.css",
+        "styles/lib/dragsort/dragsort.css"
+    ],
     "languages": [
         {
             "lang": "en",
             "name": "English",
             "path": "languages/en.json"
+        },
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "languages/archmage/en.json"
         },
         {
             "lang": "en",
