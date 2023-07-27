@@ -195,5 +195,6 @@ export const DERIVED_PROPERTIES = [
     'actor.system.attributes.encumbrance.value',
     'actor.system.attributes.encumbrance.max',
     'actor.system.attributes.encumbrance.pct',
-    'actor.system.attributes.encumbrance.encumbered'
+    'actor.system.attributes.encumbrance.encumbered',
+    'actor.system.spells.pact.max'
 ]
