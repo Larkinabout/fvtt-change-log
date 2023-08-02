@@ -126,7 +126,7 @@ export class ChangeLog {
         const { combatant, userId } = preCreateCombatantData
 
         const actor = game.actors.get(combatant.actorId)
-        const token = (actor) ? (actor.token ?? null) : null
+        const token = actor?.token || null
         const documentType = 'actor'
         const key = 'inCombat'
         const modifiedByName = game.users.get(userId)?.name
@@ -136,8 +136,8 @@ export class ChangeLog {
         if (!isEveryone && !isGm && !isPlayer) return
 
         const templateData = {
-            tokenId: token?.id ?? null,
-            actorId: actor.id ?? null,
+            tokenId: token?.id || null,
+            actorId: actor?.id || null,
             id: actor.id,
             document1Name: actor.name,
             document2Name: null,
@@ -164,8 +164,8 @@ export class ChangeLog {
         const parentDocument = (documentType !== 'actor' && doc.parent?.documentName === 'Actor')
             ? doc.parent
             : null
-        const actor = parentDocument ?? ((documentType === 'actor') ? doc : ((documentType === 'token') ? (doc?.actor ?? null) : null))
-        const token = (documentType === 'token') ? doc : ((actor) ? (actor.token ?? null) : null)
+        const actor = parentDocument || ((documentType === 'actor') ? doc : ((documentType === 'token') ? (doc?.actor || null) : null))
+        const token = (documentType === 'token') ? doc : (actor?.token || null)
 
         const derivedProperties = DERIVED_PROPERTIES.map(derivedProperty => {
             const obj = (derivedProperty.split('.')[0] === 'actor') ? actor : doc
@@ -181,9 +181,7 @@ export class ChangeLog {
             }
         }
 
-        // eslint-disable-next-line no-undef
         const flattenedObjects = await flattenObject(data)
-
         const modifiedByName = game.users.get(userId)?.name
 
         for (const key of Object.keys(flattenedObjects)) {
@@ -192,8 +190,8 @@ export class ChangeLog {
             if (!isEveryone && !isGm && !isPlayer) continue
 
             const templateData = {
-                tokenId: token?.id ?? null,
-                actorId: actor?.id ?? null,
+                tokenId: token?.id || null,
+                actorId: actor?.id || null,
                 documentId: doc.id,
                 document1Name: (parentDocument) ? parentDocument.name : doc.name,
                 document2Name: (parentDocument) ? doc.name : null,
@@ -217,15 +215,15 @@ export class ChangeLog {
 
     async getUpdateData (documentType, updateData) {
         const { doc, userId } = updateData
-        const derivedProperties = this.derivedPropertiesMap.get(doc.id) ?? []
+        const derivedProperties = this.derivedPropertiesMap.get(doc.id) || []
 
         if (!derivedProperties.length) return
 
-        const parentDocument = (documentType !== 'actor' && document.parent?.documentName === 'Actor')
+        const parentDocument = (documentType !== 'actor' && doc.parent?.documentName === 'Actor')
             ? doc.parent
             : null
-        const actor = parentDocument ?? ((documentType === 'actor') ? doc : null)
-        const token = (actor) ? (actor.token ?? null) : null
+        const actor = parentDocument || ((documentType === 'actor') ? doc : null)
+        const token = actor?.token || null
 
         const modifiedByName = game.users.get(userId)?.name
 
@@ -242,8 +240,8 @@ export class ChangeLog {
             if (!isEveryone && !isGm && !isPlayer) continue
 
             const templateData = {
-                tokenId: token?.id ?? null,
-                actorId: actor?.id ?? null,
+                tokenId: token?.id || null,
+                actorId: actor?.id || null,
                 documentId: doc.id,
                 document1Name: (propertyDocumentType === 'actor' && parentDocument) ? parentDocument.name : doc.name,
                 document2Name: (propertyDocumentType !== 'actor' && parentDocument) ? doc.name : null,
@@ -271,16 +269,16 @@ export class ChangeLog {
         const { doc, userId } = deleteData
         const key = 'deleted'
         const parentDocument = (documentType !== 'actor' && doc.parent?.documentName === 'Actor') ? doc.parent : null
-        const actor = parentDocument ?? ((documentType === 'actor') ? doc : null)
-        const token = (actor) ? (actor.token ?? null) : null
+        const actor = parentDocument || ((documentType === 'actor') ? doc : null)
+        const token = actor.token || null
 
         const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor.type, key)
 
         if (!isEveryone && !isGm && !isPlayer) return
 
         const templateData = {
-            tokenId: token?.id ?? null,
-            actorId: actor?.id ?? null,
+            tokenId: token?.id || null,
+            actorId: actor?.id || null,
             documentId: doc.id,
             document1Name: (parentDocument) ? parentDocument.name : doc.name,
             document2Name: (parentDocument) ? doc.name : null,
@@ -319,17 +317,17 @@ export class ChangeLog {
             .map(([userId, _]) => userId)
     }
 
-    #isNotValidChange (value) {
-        if (value.oldValue === value.newValue) return true
-        if ([0, null].includes(value.oldValue) && [0, null].includes(value.newValue)) return true
-        return false
+    #isValidChange (value) {
+        if (value.oldValue === value.newValue) return false
+        if ([0, null].includes(value.oldValue) && [0, null].includes(value.newValue)) return false
+        return true
     }
 
     async #createChatMessage (changeType, templateData, whisperData) {
         const { tokenId, actorId, documentId, document1Name, document2Name, documentType, key, oldValue, newValue, modifiedByName } = templateData
         const { actor, isEveryone, isGm, isPlayer } = whisperData
 
-        if (this.#isNotValidChange({ oldValue, newValue })) return
+        if (!this.#isValidChange({ oldValue, newValue })) return
 
         const content = await renderTemplate(
             TEMPLATE.CHAT_CARD,
@@ -373,12 +371,7 @@ export class ChangeLog {
 
 async function undo (chatMessageId) {
     const chatMessage = game.messages.get(chatMessageId)
-    const tokenId = chatMessage?.getFlag('change-log', 'tokenId')
-    const actorId = chatMessage?.getFlag('change-log', 'actorId')
-    const id = chatMessage?.getFlag('change-log', 'id')
-    const key = chatMessage?.getFlag('change-log', 'key')
-    const type = chatMessage?.getFlag('change-log', 'type')
-    const val = chatMessage?.getFlag('change-log', 'val')
+    const { tokenId, actorId, id, key, type, val } = chatMessage?.flags['change-log']
 
     if (!id || val === null) return
 
@@ -391,14 +384,11 @@ async function undo (chatMessageId) {
         doc = actor
         break
     case 'item':
-        if (actor) {
-            doc = actor?.items.get(id)
-        } else {
-            doc = game.items.get(id)
-        }
+        doc = (actor) ? actor?.items.get(id) : game.items.get(id)
         break
     case 'token':
         doc = token
+        break
     }
 
     if (doc) await doc.update({ [key]: val })
