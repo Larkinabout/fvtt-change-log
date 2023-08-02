@@ -1,87 +1,48 @@
 {
-    "changeLog": {
-        "empty": "–",
-        "modifiedBy": "Modified By",
-        "settings": {
-            "everyoneActorTypesForm": {
-                "name": "Actor Types for Everyone",
-                "label": "Actor Types for Everyone",
-                "hint": "Actor types to log for everyone"
-            },
-            "everyonePropertiesForm": {
-                "name": "Changes for Everyone",
-                "label": "Changes for Everyone",
-                "hint": "Changes to log for everyone"
-            },
-            "gmActorTypesForm": {
-                "name": "Actor Types for GM",
-                "label": "Actor Types for GM",
-                "hint": "Actor types to log for the GM"
-            },
-            "gmPropertiesForm": {
-                "name": "Changes for GM",
-                "label": "Changes for GM",
-                "hint": "Changes to log for the GM"
-            },
-            "playerPropertiesForm": {
-                "name": "Changes for Player",
-                "label": "Changes for Player",
-                "hint": "Changes to log for the player"
-            },
-            "showRecipients": {
-                "name": "Show Recipients",
-                "hint": "Choose whether to show recipients on the chat card"
-            },
-            "showSender": {
-                "name": "Show Sender",
-                "hint": "Choose whether to show sender on the chat card"
-            }
-        },
-        "tagForm": {
-            "accept": "Accept",
-            "cancel": "Cancel",
-            "unselectAll": "Unselect All",
-            "selectAll": "Select All",
-            "everyoneActorTypes": {
-                "description": "Click items in the Available Types box to select them or type into the Selected Types.",
-                "title": "Actor Types for Everyone",
-                "label": {
-                    "available": "Available Types",
-                    "selected": "Selected Types"
-                }
-            },
-            "everyoneProperties": {
-                "description": "Click items in the Available Properties box to select them or type into the Selected Properties.",
-                "title": "Changes for Everyone",
-                "label": {
-                    "available": "Available Properties",
-                    "selected": "Selected Properties"
-                }
-            },
-            "gmActorTypes": {
-                "description": "Click items in the Available Types box to select them or type into the Selected Types.",
-                "title": "Actor Types for GM",
-                "label": {
-                    "available": "Available Types",
-                    "selected": "Selected Types"
-                }
-            },
-            "gmProperties": {
-                "description": "Click items in the Available Properties box to select them or type into the Selected Properties.",
-                "title": "Changes for GM",
-                "label": {
-                    "available": "Available Properties",
-                    "selected": "Selected Properties"
-                }
-            },
-            "playerProperties": {
-                "description": "Click items in the Available Properties box to select them or type into the Selected Properties.",
-                "title": "Changes for Player",
-                "label": {
-                    "available": "Available Properties",
-                    "selected": "Selected Properties"
-                }
-            }
-        }
-    }
+    "changeLog.empty": "–",
+    "changeLog.modifiedBy": "Modified By",
+    "changeLog.settings.everyoneActorTypesForm.name": "Actor Types for Everyone",
+    "changeLog.settings.everyoneActorTypesForm.label": "Actor Types for Everyone",
+    "changeLog.settings.everyoneActorTypesForm.hint": "Actor types to log for everyone",
+    "changeLog.settings.everyonePropertiesForm.name": "Changes for Everyone",
+    "changeLog.settings.everyonePropertiesForm.label": "Changes for Everyone",
+    "changeLog.settings.everyonePropertiesForm.hint": "Changes to log for everyone",
+    "changeLog.settings.gmActorTypesForm.name": "Actor Types for GM",
+    "changeLog.settings.gmActorTypesForm.label": "Actor Types for GM",
+    "changeLog.settings.gmActorTypesForm.hint": "Actor types to log for the GM",
+    "changeLog.settings.gmPropertiesForm.name": "Changes for GM",
+    "changeLog.settings.gmPropertiesForm.label": "Changes for GM",
+    "changeLog.settings.gmPropertiesForm.hint": "Changes to log for the GM",
+    "changeLog.settings.playerPropertiesForm.name": "Changes for Player",
+    "changeLog.settings.playerPropertiesForm.label": "Changes for Player",
+    "changeLog.settings.playerPropertiesForm.hint": "Changes to log for the player",
+    "changeLog.settings.showRecipients.name": "Show Recipients",
+    "changeLog.settings.showRecipients.hint": "Choose whether to show recipients on the chat card",
+    "changeLog.settings.showSender.name": "Show Sender",
+    "changeLog.settings.showSender.hint": "Choose whether to show sender on the chat card",
+    "changeLog.tagForm.accept": "Accept",
+    "changeLog.tagForm.cancel": "Cancel",
+    "changeLog.tagForm.unselectAll": "Unselect All",
+    "changeLog.tagForm.selectAll": "Select All",
+    "changeLog.tagForm.everyoneActorTypes.description": "Click items in the Available Types box to select them or type into the Selected Types.",
+    "changeLog.tagForm.everyoneActorTypes.title": "Actor Types for Everyone",
+    "changeLog.tagForm.everyoneActorTypes.label.available": "Available Types",
+    "changeLog.tagForm.everyoneActorTypes.label.selected": "Selected Types",
+    "changeLog.tagForm.everyoneActorTypes.everyoneProperties.description": "Click items in the Available Properties box to select them or type into the Selected Properties.",
+    "changeLog.tagForm.everyoneActorTypes.everyoneProperties.title": "Changes for Everyone",
+    "changeLog.tagForm.everyoneActorTypes.everyoneProperties.label.available": "Available Properties",
+    "changeLog.tagForm.everyoneActorTypes.everyoneProperties.label.selected": "Selected Properties",
+    "changeLog.tagForm.gmActorTypes.description": "Click items in the Available Types box to select them or type into the Selected Types.",
+    "changeLog.tagForm.gmActorTypes.title": "Actor Types for GM",
+    "changeLog.tagForm.gmActorTypes.label.available": "Available Types",
+    "changeLog.tagForm.gmActorTypes.label.selected": "Selected Types",
+    "changeLog.tagForm.gmProperties.description": "Click items in the Available Properties box to select them or type into the Selected Properties.",
+    "changeLog.tagForm.gmProperties.title": "Changes for GM",
+    "changeLog.tagForm.gmProperties.label.available": "Available Properties",
+    "changeLog.tagForm.gmProperties.label.selected": "Selected Properties",
+    "changeLog.tagForm.playerProperties.description": "Click items in the Available Properties box to select them or type into the Selected Properties.",
+    "changeLog.tagForm.playerProperties.title": "Changes for Player",
+    "changeLog.tagForm.playerProperties.label.available": "Available Properties",
+    "changeLog.tagForm.playerProperties.label.selected": "Selected Properties",
+    "changeLog.undo": "Undo Change"
 }

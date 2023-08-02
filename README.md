@@ -10,6 +10,7 @@ A Foundry VTT module to log changes to the chat log.
 # Features
 - Log changes per property and actor type.
 - Show specific changes to the GM, player or everyone.
+- Undo changes by right-clicking the chat message.
 
 # Installation
 

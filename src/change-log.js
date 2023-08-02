@@ -1,4 +1,4 @@
-import { DELIMITER, TEMPLATE } from './constants.js'
+import { DELIMITER, MODULE, TEMPLATE } from './constants.js'
 import { DERIVED_PROPERTIES } from './system-handler.js'
 import { registerSettings } from './settings.js'
 import { Utils } from './utils.js'
@@ -7,6 +7,28 @@ Hooks.on('init', () => {
     registerSettings()
     game.changeLog = new ChangeLog()
     game.changeLog.init()
+
+    const module = game.modules.get(MODULE.ID)
+    module.api = {
+        undo,
+        Utils
+    }
+})
+
+Hooks.on('getChatLogEntryContext', async (html, menuItems) => {
+    const menuItem = {
+        name: 'Undo Change',
+        icon: '<i class="fas fa-rotate-left"></i>',
+        condition: li => {
+            const message = game.messages.get(li.data('messageId'))
+            return message.getFlag('change-log', 'val') !== null
+        },
+        callback: li => {
+            undo(li.data('messageId'))
+        }
+    }
+
+    menuItems.push(menuItem)
 })
 
 Hooks.on('preCreateCombatant', async (combatant, data, options, userId) => {
@@ -40,7 +62,7 @@ Hooks.on('updateItem', async (item, data, options, userId) => {
 })
 
 Hooks.on('renderChatMessage', async (chatMessage, html) => {
-    if (!chatMessage.flags.changeLog) return
+    if (!chatMessage.getFlag('change-log', 'id1')) return
     if (chatMessage.whisper.length && !chatMessage.whisper.includes(game.user.id)) { html.css('display', 'none') }
     if (!game.changeLog.showRecipients) { html.find('.whisper-to')?.remove() }
     if (!game.changeLog.showSender) {
@@ -109,9 +131,12 @@ export class ChangeLog {
         if (!isEveryone && !isGm && !isPlayer) return
 
         const templateData = {
+            document1Id: document.id,
+            document2Id: null,
             document1Name: actor.name,
             document2Name: null,
-            property: `${documentType}.${key}`,
+            documentType,
+            key,
             modifiedByName,
             oldValue: actor.inCombat,
             newValue: true
@@ -124,7 +149,7 @@ export class ChangeLog {
             isPlayer
         }
 
-        this.#createChatMessage(templateData, whisperData)
+        this.#createChatMessage('preCreateCombatant', templateData, whisperData)
     }
 
     async getPreUpdateData (documentType, preUpdateData) {
@@ -160,9 +185,12 @@ export class ChangeLog {
             if (!isEveryone && !isGm && !isPlayer) continue
 
             const templateData = {
+                document1Id: (parentDocument) ? parentDocument.id : document.id,
+                document2Id: (parentDocument) ? document.name : null,
                 document1Name: (parentDocument) ? parentDocument.name : document.name,
                 document2Name: (parentDocument) ? document.name : null,
-                property: `${documentType}.${key}`,
+                documentType,
+                key,
                 modifiedByName,
                 oldValue: Utils.getValueByDotNotation(document, key),
                 newValue: Utils.getValueByDotNotation(data, key)
@@ -175,7 +203,7 @@ export class ChangeLog {
                 isPlayer
             }
 
-            this.#createChatMessage(templateData, whisperData)
+            this.#createChatMessage('preUpdate', templateData, whisperData)
         }
     }
 
@@ -205,9 +233,12 @@ export class ChangeLog {
             if (!isEveryone && !isGm && !isPlayer) continue
 
             const templateData = {
+                document1Id: (propertyDocumentType === 'actor' && parentDocument) ? parentDocument.id : document.id,
+                document2Id: (propertyDocumentType !== 'actor' && parentDocument) ? document.id : null,
                 document1Name: (propertyDocumentType === 'actor' && parentDocument) ? parentDocument.name : document.name,
                 document2Name: (propertyDocumentType !== 'actor' && parentDocument) ? document.name : null,
-                property: `${propertyDocumentType}.${key}`,
+                documentType: propertyDocumentType,
+                key,
                 modifiedByName,
                 oldValue,
                 newValue
@@ -220,7 +251,7 @@ export class ChangeLog {
                 isPlayer
             }
 
-            this.#createChatMessage(templateData, whisperData)
+            this.#createChatMessage('update', templateData, whisperData)
         }
 
         this.derivedPropertiesMap.delete(document.id)
@@ -237,9 +268,12 @@ export class ChangeLog {
         if (!isEveryone && !isGm && !isPlayer) return
 
         const templateData = {
+            document1Id: (parentDocument) ? parentDocument.id : document.id,
+            document2Id: (parentDocument) ? document.id : null,
             document1Name: (parentDocument) ? parentDocument.name : document.name,
             document2Name: (parentDocument) ? document.name : null,
-            property: `${documentType}.${key}`,
+            documentType,
+            key,
             modifiedByName: game.users.get(userId)?.name,
             oldValue: null,
             newValue: true
@@ -252,7 +286,7 @@ export class ChangeLog {
             isPlayer
         }
 
-        this.#createChatMessage(templateData, whisperData)
+        this.#createChatMessage('delete', templateData, whisperData)
     }
 
     #getAudience (documentType, actorType, key) {
@@ -279,8 +313,8 @@ export class ChangeLog {
         return false
     }
 
-    async #createChatMessage (templateData, whisperData) {
-        const { document1Name, document2Name, property, oldValue, newValue, modifiedByName } = templateData
+    async #createChatMessage (changeType, templateData, whisperData) {
+        const { document1Id, document2Id, document1Name, document2Name, documentType, key, oldValue, newValue, modifiedByName } = templateData
         const { actor, isEveryone, isGm, isPlayer } = whisperData
 
         if (this.#isNotValidChange({ oldValue, newValue })) return
@@ -290,7 +324,7 @@ export class ChangeLog {
             {
                 document1Name,
                 document2Name,
-                propertyName: Utils.getPropertyName(property),
+                propertyName: Utils.getPropertyName(`${documentType}.${key}`),
                 oldValue: Utils.getPropertyValue(oldValue),
                 newValue: Utils.getPropertyValue(newValue),
                 tooltip: `<div>${game.i18n.localize('changeLog.modifiedBy')}: ${modifiedByName}</div>`
@@ -309,6 +343,43 @@ export class ChangeLog {
             if (isPlayer) whisper.push(...owners)
         }
 
-        await ChatMessage.create({ content, speaker, whisper, flags: { changeLog: true } })
+        const flags =
+            {
+                'change-log': {
+                    id1: document1Id,
+                    id2: document2Id,
+                    key,
+                    type: documentType,
+                    val: (changeType === 'preUpdate') ? oldValue : null
+                }
+            }
+
+        await ChatMessage.create({ content, speaker, whisper, flags })
     }
+}
+
+async function undo (chatMessageId) {
+    const chatMessage = game.messages.get(chatMessageId)
+    const id1 = chatMessage?.getFlag('change-log', 'id1')
+    const id2 = chatMessage?.getFlag('change-log', 'id2')
+    const key = chatMessage?.getFlag('change-log', 'key')
+    const type = chatMessage?.getFlag('change-log', 'type')
+    const val = chatMessage?.getFlag('change-log', 'val')
+
+    if (!id1 || val === null) return
+
+    let doc
+    switch (type) {
+    case 'actor':
+        doc = game.actors.get(id1)
+        break
+    case 'item':
+        if (id2) {
+            doc = game.actors.get(id1).items.get(id2)
+        } else {
+            doc = game.items.get(id1)
+        }
+    }
+
+    if (doc) await doc.update({ [key]: val })
 }
