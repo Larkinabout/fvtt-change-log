@@ -36,33 +36,33 @@ Hooks.on('preCreateCombatant', async (combatant, data, options, userId) => {
 })
 
 Hooks.on('preUpdateActiveEffect', async (activeEffect, data, options, userId) => {
-    await game.changeLog.getPreUpdateData('activeEffect', { document: activeEffect, data, options, userId })
+    await game.changeLog.getPreUpdateData('activeEffect', { doc: activeEffect, data, options, userId })
 })
 
 Hooks.on('preDeleteActiveEffect', async (activeEffect, data, userId) => {
-    await game.changeLog.getDeleteData('activeEffect', { document: activeEffect, data, userId })
+    await game.changeLog.getDeleteData('activeEffect', { doc: activeEffect, data, userId })
 })
 
 Hooks.on('preUpdateActor', async (actor, data, options, userId) => {
-    await game.changeLog.getPreUpdateData('actor', { document: actor, data, options, userId })
+    await game.changeLog.getPreUpdateData('actor', { doc: actor, data, options, userId })
 })
 
 Hooks.on('preUpdateItem', async (item, data, options, userId) => {
-    await game.changeLog.getPreUpdateData('item', { document: item, data, options, userId })
+    await game.changeLog.getPreUpdateData('item', { doc: item, data, options, userId })
 })
 
 Hooks.on('updateActor', async (actor, data, options, userId) => {
     if (game.userId !== data._stats?.lastModifiedBy) return
-    await game.changeLog.getUpdateData('actor', { document: actor, data, options, userId })
+    await game.changeLog.getUpdateData('actor', { doc: actor, data, options, userId })
 })
 
 Hooks.on('updateItem', async (item, data, options, userId) => {
     if (game.userId !== data._stats?.lastModifiedBy) return
-    await game.changeLog.getUpdateData('item', { document: item, data, options, userId })
+    await game.changeLog.getUpdateData('item', { doc: item, data, options, userId })
 })
 
 Hooks.on('renderChatMessage', async (chatMessage, html) => {
-    if (!chatMessage.getFlag('change-log', 'id1')) return
+    if (!chatMessage.getFlag('change-log', 'key')) return
     if (chatMessage.whisper.length && !chatMessage.whisper.includes(game.user.id)) { html.css('display', 'none') }
     if (!game.changeLog.showRecipients) { html.find('.whisper-to')?.remove() }
     if (!game.changeLog.showSender) {
@@ -122,6 +122,7 @@ export class ChangeLog {
         const { combatant, userId } = preCreateCombatantData
 
         const actor = game.actors.get(combatant.actorId)
+        const token = (actor) ? (actor.token ?? null) : null
         const documentType = 'actor'
         const key = 'inCombat'
         const modifiedByName = game.users.get(userId)?.name
@@ -131,8 +132,9 @@ export class ChangeLog {
         if (!isEveryone && !isGm && !isPlayer) return
 
         const templateData = {
-            document1Id: document.id,
-            document2Id: null,
+            tokenId: token?.id ?? null,
+            actorId: actor.id ?? null,
+            id: actor.id,
             document1Name: actor.name,
             document2Name: null,
             documentType,
@@ -153,24 +155,25 @@ export class ChangeLog {
     }
 
     async getPreUpdateData (documentType, preUpdateData) {
-        const { document, data, userId } = preUpdateData
+        const { doc, data, userId } = preUpdateData
 
-        const parentDocument = (documentType !== 'actor' && document.parent?.documentName === 'Actor')
-            ? document.parent
+        const parentDocument = (documentType !== 'actor' && doc.parent?.documentName === 'Actor')
+            ? doc.parent
             : null
-        const actor = parentDocument ?? document
+        const actor = parentDocument ?? ((documentType === 'actor') ? doc : null)
+        const token = (actor) ? (actor.token ?? null) : null
 
         const derivedProperties = DERIVED_PROPERTIES.map(derivedProperty => {
-            const obj = (derivedProperty.split('.')[0] === 'actor') ? actor : document
+            const obj = (derivedProperty.split('.')[0] === 'actor') ? actor : doc
             const oldValue = Utils.getValueByDotNotation(obj, Utils.getPropertyKey(derivedProperty))
             return { property: derivedProperty, oldValue }
         })
 
         if (derivedProperties.length) {
-            if (!this.derivedPropertiesMap.has(document.id)) {
-                this.derivedPropertiesMap.set(document.id, derivedProperties)
+            if (!this.derivedPropertiesMap.has(doc.id)) {
+                this.derivedPropertiesMap.set(doc.id, derivedProperties)
             } else {
-                this.derivedPropertiesMap.get(document.id).push(...derivedProperties)
+                this.derivedPropertiesMap.get(doc.id).push(...derivedProperties)
             }
         }
 
@@ -185,14 +188,15 @@ export class ChangeLog {
             if (!isEveryone && !isGm && !isPlayer) continue
 
             const templateData = {
-                document1Id: (parentDocument) ? parentDocument.id : document.id,
-                document2Id: (parentDocument) ? document.name : null,
-                document1Name: (parentDocument) ? parentDocument.name : document.name,
-                document2Name: (parentDocument) ? document.name : null,
+                tokenId: token?.id ?? null,
+                actorId: actor?.id ?? null,
+                documentId: doc.id,
+                document1Name: (parentDocument) ? parentDocument.name : doc.name,
+                document2Name: (parentDocument) ? doc.name : null,
                 documentType,
                 key,
                 modifiedByName,
-                oldValue: Utils.getValueByDotNotation(document, key),
+                oldValue: Utils.getValueByDotNotation(doc, key),
                 newValue: Utils.getValueByDotNotation(data, key)
             }
 
@@ -208,15 +212,16 @@ export class ChangeLog {
     }
 
     async getUpdateData (documentType, updateData) {
-        const { document, userId } = updateData
-        const derivedProperties = this.derivedPropertiesMap.get(document.id) ?? []
+        const { doc, userId } = updateData
+        const derivedProperties = this.derivedPropertiesMap.get(doc.id) ?? []
 
         if (!derivedProperties.length) return
 
         const parentDocument = (documentType !== 'actor' && document.parent?.documentName === 'Actor')
-            ? document.parent
+            ? doc.parent
             : null
-        const actor = parentDocument ?? document
+        const actor = parentDocument ?? ((documentType === 'actor') ? doc : null)
+        const token = (actor) ? (actor.token ?? null) : null
 
         const modifiedByName = game.users.get(userId)?.name
 
@@ -225,7 +230,7 @@ export class ChangeLog {
 
             const key = Utils.getPropertyKey(property)
             const propertyDocumentType = Utils.getPropertyDocumentType(property)
-            const obj = (propertyDocumentType === 'actor') ? actor : document
+            const obj = (propertyDocumentType === 'actor') ? actor : doc
             const newValue = Utils.getValueByDotNotation(obj, key)
 
             const { isEveryone, isGm, isPlayer } = this.#getAudience(propertyDocumentType, actor.type, key)
@@ -233,10 +238,11 @@ export class ChangeLog {
             if (!isEveryone && !isGm && !isPlayer) continue
 
             const templateData = {
-                document1Id: (propertyDocumentType === 'actor' && parentDocument) ? parentDocument.id : document.id,
-                document2Id: (propertyDocumentType !== 'actor' && parentDocument) ? document.id : null,
-                document1Name: (propertyDocumentType === 'actor' && parentDocument) ? parentDocument.name : document.name,
-                document2Name: (propertyDocumentType !== 'actor' && parentDocument) ? document.name : null,
+                tokenId: token?.id ?? null,
+                actorId: actor?.id ?? null,
+                documentId: doc.id,
+                document1Name: (propertyDocumentType === 'actor' && parentDocument) ? parentDocument.name : doc.name,
+                document2Name: (propertyDocumentType !== 'actor' && parentDocument) ? doc.name : null,
                 documentType: propertyDocumentType,
                 key,
                 modifiedByName,
@@ -254,24 +260,26 @@ export class ChangeLog {
             this.#createChatMessage('update', templateData, whisperData)
         }
 
-        this.derivedPropertiesMap.delete(document.id)
+        this.derivedPropertiesMap.delete(doc.id)
     }
 
     async getDeleteData (documentType, deleteData) {
-        const { document, userId } = deleteData
+        const { doc, userId } = deleteData
         const key = 'deleted'
-        const parentDocument = (documentType !== 'actor' && document.parent?.documentName === 'Actor') ? document.parent : null
-        const actor = parentDocument ?? document
+        const parentDocument = (documentType !== 'actor' && doc.parent?.documentName === 'Actor') ? doc.parent : null
+        const actor = parentDocument ?? ((documentType === 'actor') ? doc : null)
+        const token = (actor) ? (actor.token ?? null) : null
 
         const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor.type, key)
 
         if (!isEveryone && !isGm && !isPlayer) return
 
         const templateData = {
-            document1Id: (parentDocument) ? parentDocument.id : document.id,
-            document2Id: (parentDocument) ? document.id : null,
-            document1Name: (parentDocument) ? parentDocument.name : document.name,
-            document2Name: (parentDocument) ? document.name : null,
+            tokenId: token?.id ?? null,
+            actorId: actor?.id ?? null,
+            documentId: doc.id,
+            document1Name: (parentDocument) ? parentDocument.name : doc.name,
+            document2Name: (parentDocument) ? doc.name : null,
             documentType,
             key,
             modifiedByName: game.users.get(userId)?.name,
@@ -314,7 +322,7 @@ export class ChangeLog {
     }
 
     async #createChatMessage (changeType, templateData, whisperData) {
-        const { document1Id, document2Id, document1Name, document2Name, documentType, key, oldValue, newValue, modifiedByName } = templateData
+        const { tokenId, actorId, documentId, document1Name, document2Name, documentType, key, oldValue, newValue, modifiedByName } = templateData
         const { actor, isEveryone, isGm, isPlayer } = whisperData
 
         if (this.#isNotValidChange({ oldValue, newValue })) return
@@ -346,13 +354,14 @@ export class ChangeLog {
         const flags =
             {
                 'change-log': {
-                    id1: document1Id,
-                    id2: document2Id,
+                    id: documentId,
                     key,
                     type: documentType,
                     val: (changeType === 'preUpdate') ? oldValue : null
                 }
             }
+        flags['change-log'].tokenId = tokenId
+        flags['change-log'].actorId = actorId
 
         await ChatMessage.create({ content, speaker, whisper, flags })
     }
@@ -360,24 +369,28 @@ export class ChangeLog {
 
 async function undo (chatMessageId) {
     const chatMessage = game.messages.get(chatMessageId)
-    const id1 = chatMessage?.getFlag('change-log', 'id1')
-    const id2 = chatMessage?.getFlag('change-log', 'id2')
+    const tokenId = chatMessage?.getFlag('change-log', 'tokenId')
+    const actorId = chatMessage?.getFlag('change-log', 'actorId')
+    const id = chatMessage?.getFlag('change-log', 'id')
     const key = chatMessage?.getFlag('change-log', 'key')
     const type = chatMessage?.getFlag('change-log', 'type')
     const val = chatMessage?.getFlag('change-log', 'val')
 
-    if (!id1 || val === null) return
+    if (!id || val === null) return
+
+    const token = (tokenId) ? game.scenes.map(scene => scene.tokens.find(token => token.id === tokenId)).filter(token => !!token)[0] : null
+    const actor = (token) ? token.actor : (actorId) ? game.actors.get(actorId) : null
 
     let doc
     switch (type) {
     case 'actor':
-        doc = game.actors.get(id1)
+        doc = actor
         break
     case 'item':
-        if (id2) {
-            doc = game.actors.get(id1).items.get(id2)
+        if (actor) {
+            doc = actor?.items.get(id)
         } else {
-            doc = game.items.get(id1)
+            doc = game.items.get(id)
         }
     }
 
