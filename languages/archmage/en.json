@@ -236,7 +236,20 @@
             "item.system.powerUsage.value": "Power Usage",
             "item.system.quantity.value": "Uses",
             "item.system.recharge.value": "Recharge",
-            "item.system.rechargeAttempts.value": "Recharge Attempts"
+            "item.system.rechargeAttempts.value": "Recharge Attempts",
+            "token.disposition": "Disposition",
+            "token.elevation": "Elevation",
+            "token.name": "Token Name",
+            "token.rotation": "Rotation",
+            "token.sight.angle": "Sight Angle",
+            "token.sight.attenuation": "Sight Attenuation",
+            "token.sight.brightness": "Sight Brightness",
+            "token.sight.color": "Sight Color",
+            "token.sight.contrast": "Sight Contrast",
+            "token.sight.enabled": "Sight Enabled",
+            "token.sight.range": "Sight Range",
+            "token.sight.saturation": "Sight Saturation",
+            "token.sight.visionMode": "Vision Mode"
         }
     }
 }

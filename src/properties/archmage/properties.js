@@ -236,7 +236,20 @@ export const PROPERTIES = [
     'item.system.powerUsage.value',
     'item.system.quantity.value',
     'item.system.recharge.value',
-    'item.system.rechargeAttempts.value'
+    'item.system.rechargeAttempts.value',
+    'token.disposition',
+    'token.elevation',
+    'token.name',
+    'token.rotation',
+    'token.sight.angle',
+    'token.sight.attenuation',
+    'token.sight.brightness',
+    'token.sight.color',
+    'token.sight.contrast',
+    'token.sight.enabled',
+    'token.sight.range',
+    'token.sight.saturation',
+    'token.sight.visionMode'
 ]
 
 export const DERIVED_PROPERTIES = [

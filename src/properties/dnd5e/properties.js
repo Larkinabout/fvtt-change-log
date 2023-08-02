@@ -188,7 +188,20 @@ export const PROPERTIES = [
     'item.system.quantity',
     'item.system.uses.max',
     'item.system.uses.value',
-    'item.system.weight'
+    'item.system.weight',
+    'token.disposition',
+    'token.elevation',
+    'token.name',
+    'token.rotation',
+    'token.sight.angle',
+    'token.sight.attenuation',
+    'token.sight.brightness',
+    'token.sight.color',
+    'token.sight.contrast',
+    'token.sight.enabled',
+    'token.sight.range',
+    'token.sight.saturation',
+    'token.sight.visionMode'
 ]
 
 export const DERIVED_PROPERTIES = [

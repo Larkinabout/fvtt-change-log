@@ -51,6 +51,10 @@ Hooks.on('preUpdateItem', async (item, data, options, userId) => {
     await game.changeLog.getPreUpdateData('item', { doc: item, data, options, userId })
 })
 
+Hooks.on('preUpdateToken', async (token, data, options, userId) => {
+    await game.changeLog.getPreUpdateData('token', { doc: token, data, options, userId })
+})
+
 Hooks.on('updateActor', async (actor, data, options, userId) => {
     if (game.userId !== data._stats?.lastModifiedBy) return
     await game.changeLog.getUpdateData('actor', { doc: actor, data, options, userId })
@@ -160,8 +164,8 @@ export class ChangeLog {
         const parentDocument = (documentType !== 'actor' && doc.parent?.documentName === 'Actor')
             ? doc.parent
             : null
-        const actor = parentDocument ?? ((documentType === 'actor') ? doc : null)
-        const token = (actor) ? (actor.token ?? null) : null
+        const actor = parentDocument ?? ((documentType === 'actor') ? doc : ((documentType === 'token') ? (doc?.actor ?? null) : null))
+        const token = (documentType === 'token') ? doc : ((actor) ? (actor.token ?? null) : null)
 
         const derivedProperties = DERIVED_PROPERTIES.map(derivedProperty => {
             const obj = (derivedProperty.split('.')[0] === 'actor') ? actor : doc
@@ -392,6 +396,9 @@ async function undo (chatMessageId) {
         } else {
             doc = game.items.get(id)
         }
+        break
+    case 'token':
+        doc = token
     }
 
     if (doc) await doc.update({ [key]: val })
