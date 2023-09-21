@@ -1,6 +1,7 @@
 import { ACTOR_TYPES as ARCHMAGE_ACTOR_TYPES, DERIVED_PROPERTIES as ARCHMAGE_DERIVED_PROPERTIES, PROPERTIES as ARCHMAGE_PROPERTIES } from './properties/archmage/properties.js'
 import { ACTOR_TYPES as CYPHERSYSTEM_ACTOR_TYPES, DERIVED_PROPERTIES as CYPHERSYSTEM_DERIVED_PROPERTIES, PROPERTIES as CYPHERSYSTEM_PROPERTIES } from './properties/cyphersystem/properties.js'
 import { ACTOR_TYPES as DND5E_ACTOR_TYPES, DERIVED_PROPERTIES as DND5E_DERIVED_PROPERTIES, PROPERTIES as DND5E_PROPERTIES } from './properties/dnd5e/properties.js'
+import { ACTOR_TYPES as OSE_ACTOR_TYPES, DERIVED_PROPERTIES as OSE_DERIVED_PROPERTIES, PROPERTIES as OSE_PROPERTIES } from './properties/ose/properties.js'
 import { ACTOR_TYPES as SWADE_ACTOR_TYPES, DERIVED_PROPERTIES as SWADE_DERIVED_PROPERTIES, PROPERTIES as SWADE_PROPERTIES } from './properties/swade/properties.js'
 
 export let ACTOR_TYPES
@@ -20,6 +21,8 @@ Hooks.on('init', () => {
             return CYPHERSYSTEM_ACTOR_TYPES
         case 'dnd5e':
             return DND5E_ACTOR_TYPES
+        case 'ose':
+            return OSE_ACTOR_TYPES
         case 'swade':
             return SWADE_ACTOR_TYPES
         default:
@@ -35,6 +38,8 @@ Hooks.on('init', () => {
             return CYPHERSYSTEM_DERIVED_PROPERTIES
         case 'dnd5e':
             return DND5E_DERIVED_PROPERTIES
+        case 'ose':
+            return OSE_DERIVED_PROPERTIES
         case 'swade':
             return SWADE_DERIVED_PROPERTIES
         default:
@@ -50,6 +55,8 @@ Hooks.on('init', () => {
             return CYPHERSYSTEM_PROPERTIES
         case 'dnd5e':
             return DND5E_PROPERTIES
+        case 'ose':
+            return OSE_PROPERTIES
         case 'swade':
             return SWADE_PROPERTIES
         default:

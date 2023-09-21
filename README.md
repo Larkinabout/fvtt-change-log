@@ -32,6 +32,7 @@ Change Log is intended to be system-agnostic, however only the systems listed ar
 - [Archmage / 13th Age](https://foundryvtt.com/packages/archmage)
 - [Cypher System](https://foundryvtt.com/packages/cyphersystem)
 - [D&D 5e](https://foundryvtt.com/packages/dnd5e)
+- [Old-School Essentials (OSE)](https://foundryvtt.com/packages/ose)
 - [Savage Worlds Adventure Edition](https://foundryvtt.com/packages/swade/)
 
 If you would like your system to be supported or a property is not listed for a supported system, please raise a feature request or, better yet, create a pull request.

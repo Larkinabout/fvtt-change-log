@@ -36,7 +36,11 @@ export class Utils {
     }
 
     static getPropertyName (key) {
-        const label = game.i18n.localize(`changeLog.${game.system.id}.${key}`)
+        let label
+        label = game.i18n.localize(`changeLog.${game.system.id}.${key}`)
+        if (label.startsWith('changeLog')) {
+            label = game.i18n.localize(`changeLog.${game.system.id}.${key}.value`)
+        }
         return (!label.startsWith('changeLog')) ? label : key
     }
 

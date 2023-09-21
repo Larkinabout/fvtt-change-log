@@ -44,6 +44,11 @@
         {
             "lang": "en",
             "name": "English",
+            "path": "languages/ose/en.json"
+        },
+        {
+            "lang": "en",
+            "name": "English",
             "path": "languages/swade/en.json"
         }
     ],
