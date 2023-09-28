@@ -30,7 +30,8 @@ Hooks.on('getChatLogEntryContext', async (html, menuItems) => {
         icon: '<i class="fas fa-rotate-left"></i>',
         condition: li => {
             const message = game.messages.get(li.data('messageId'))
-            return message.getFlag('change-log', 'val') !== null
+            const val = message.getFlag('change-log', 'val')
+            return val !== null && val !== undefined
         },
         callback: li => {
             undo(li.data('messageId'))
