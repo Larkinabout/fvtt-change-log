@@ -75,7 +75,6 @@ If you would like your system to be supported or a property is not listed for a 
 14. Click **Save Changes**
 
 ## Wishlist
-- Log changes to a separate tab/window.
 - Group simultaneous changes into one chat card.
 - Replace current method of hiding chat messages.
 - Allow users to define custom properties to appear in lists and with friendly names.
