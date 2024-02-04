@@ -12,6 +12,7 @@ Hooks.on('init', () => {
     ACTOR_TYPES = getActorTypes()
     DERIVED_PROPERTIES = getDerivedProperties()
     PROPERTIES = getProperties()
+    setFonts()
 
     function getActorTypes () {
         switch (game.system.id) {
@@ -62,5 +63,19 @@ Hooks.on('init', () => {
         default:
             return []
         }
+    }
+
+    function setFonts () {
+        const fonts = {
+            archmage: '"mason-serif","Nodesto","Signika","Palatino Linotype",serif',
+            cyphersystem: '"mason-serif","Nodesto","Signika","Palatino Linotype",serif',
+            dnd5e: 'var(--dnd5e-font-roboto-slab)',
+            ose: null,
+            swade: '"Roboto Slab","Signika",serif'
+        }
+
+        if (!fonts[game.system.id]) return
+
+        document.documentElement.style.setProperty('--font-system-primary', fonts[game.system.id])
     }
 })

@@ -1,6 +1,12 @@
+:root {
+    --font-system-primary: var(--font-primary);
+}
+
 .change-log-card-content {
-    font-size: var(--font-size-13);
-    font-style: normal;
+    font-size: var(--font-size-12);
+    gap: 0.05rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .change-log-card-document1, .change-log-card-document2 {
@@ -8,18 +14,25 @@
     flex: 1;
 }
 
+.change-log-card-document1 {
+    font-family: var(--font-system-primary);
+    font-weight: bold;
+}
+
 .change-log-card-property {
     display: flex;
     flex: 1;
+    font-style: italic;
 }
 
 .change-log-card-values {
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--color-border-light-tertiary);
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-border-light-2);
     border-radius: 3px;
+    box-shadow: 0 0 2px #FFF inset;
     display: flex;
-    padding: 2px;
+    padding: 0.1875rem;
     width: 100%;
 }
 
