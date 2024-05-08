@@ -46,6 +46,12 @@
     justify-content: center;
 }
 
+.change-log-card-adjustment-value {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+}
+
 .change-log-card-new-value {
     display: flex;
     flex: 1;

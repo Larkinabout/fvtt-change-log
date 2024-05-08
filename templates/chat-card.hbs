@@ -5,6 +5,10 @@
     <div class="change-log-card-values">
         {{#if oldValue includeZero=true}}
         <div class="change-log-card-old-value">{{{oldValue}}}</div>
+        <i class="fa {{sign}}"></i>
+        {{/if}}
+        {{#if adjustmentValue includeZero=true}}
+        <div class="change-log-card-adjustment-value">{{{adjustmentValue}}}</div>
         <i class="fa fa-arrow-right"></i>
         {{/if}}
         {{#if newValue includeZero=true}}<div class="change-log-card-new-value">{{{newValue}}}</div>{{/if}}

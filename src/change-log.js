@@ -99,6 +99,7 @@ export class ChangeLog {
             this.getGmActorTypes(),
             this.getGmProperties(),
             this.getPlayerProperties(),
+            this.getShowEquation(),
             this.getShowRecipients(),
             this.getShowSender()
         ])
@@ -122,6 +123,10 @@ export class ChangeLog {
 
     async getPlayerProperties () {
         this.playerProperties = await Utils.getSetting('playerProperties')?.split(DELIMITER) ?? []
+    }
+
+    async getShowEquation () {
+        this.showEquation = await Utils.getSetting('showEquation')
     }
 
     async getShowRecipients () {
@@ -199,6 +204,10 @@ export class ChangeLog {
 
             if (!isEveryone && !isGm && !isPlayer) continue
 
+            const oldValue = Utils.getValueByDotNotation(doc, key)
+            const newValue = Utils.getValueByDotNotation(data, key)
+            const { sign, adjustmentValue } = this.#getAdjustment(oldValue, newValue)
+
             const templateData = {
                 tokenId: token?.id || null,
                 actorId: actor?.id || null,
@@ -208,8 +217,10 @@ export class ChangeLog {
                 documentType,
                 key,
                 modifiedByName,
-                oldValue: Utils.getValueByDotNotation(doc, key),
-                newValue: Utils.getValueByDotNotation(data, key)
+                oldValue,
+                newValue,
+                sign,
+                adjustmentValue
             }
 
             const whisperData = {
@@ -249,6 +260,8 @@ export class ChangeLog {
 
             if (!isEveryone && !isGm && !isPlayer) continue
 
+            const { sign, adjustmentValue } = this.#getAdjustment(oldValue, newValue)
+
             const templateData = {
                 tokenId: token?.id || null,
                 actorId: actor?.id || null,
@@ -259,7 +272,9 @@ export class ChangeLog {
                 key,
                 modifiedByName,
                 oldValue,
-                newValue
+                newValue,
+                sign,
+                adjustmentValue
             }
 
             const whisperData = {
@@ -309,6 +324,14 @@ export class ChangeLog {
         this.#createChatMessage('delete', templateData, whisperData)
     }
 
+    #getAdjustment (oldValue, newValue) {
+        if (!this.showEquation) return null
+        const difference = (Number.isInteger(oldValue) && Number.isInteger(newValue)) ? oldValue - newValue : null
+        const sign = (Number.isInteger(difference)) ? (difference < 0) ? 'fa-plus' : 'fa-minus' : null
+        const adjustmentValue = (Number.isInteger(difference)) ? Math.abs(difference) : null
+        return { sign, adjustmentValue }
+    }
+
     #getAudience (documentType, actorType, key) {
         return {
             isEveryone: (this.everyoneActorTypes.includes(actorType) && this.everyoneProperties.includes(`${documentType}.${key}`)),
@@ -334,7 +357,10 @@ export class ChangeLog {
     }
 
     async #createChatMessage (changeType, templateData, whisperData) {
-        const { tokenId, actorId, documentId, document1Name, document2Name, documentType, key, oldValue, newValue, modifiedByName } = templateData
+        const {
+            tokenId, actorId, documentId, document1Name, document2Name, documentType,
+            key, oldValue, newValue, sign, adjustmentValue, modifiedByName
+        } = templateData
         const { actor, isEveryone, isGm, isPlayer } = whisperData
 
         if (!this.#isValidChange({ oldValue, newValue })) return
@@ -347,6 +373,8 @@ export class ChangeLog {
                 propertyName: Utils.getPropertyName(`${documentType}.${key}`),
                 oldValue: Utils.getPropertyValue(oldValue),
                 newValue: Utils.getPropertyValue(newValue),
+                sign: sign || 'fa-arrow-right',
+                adjustmentValue,
                 tooltip: `<div>${game.i18n.localize('changeLog.modifiedBy')}: ${modifiedByName}</div>`
             }
         )
