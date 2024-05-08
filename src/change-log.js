@@ -41,16 +41,24 @@ Hooks.on('getChatLogEntryContext', async (html, menuItems) => {
     menuItems.push(menuItem)
 })
 
+Hooks.on('createItem', async (item, options, userId) => {
+    await game.changeLog.getCreateItem({ item, options, userId })
+})
+
+Hooks.on('deleteItem', async (item, options, userId) => {
+    await game.changeLog.getDeleteItem({ item, options, userId })
+})
+
 Hooks.on('preCreateCombatant', async (combatant, data, options, userId) => {
     await game.changeLog.getPreCreateCombatant({ combatant, data, options, userId })
 })
 
-Hooks.on('preUpdateActiveEffect', async (activeEffect, data, options, userId) => {
-    await game.changeLog.getPreUpdateData('activeEffect', { doc: activeEffect, data, options, userId })
-})
-
 Hooks.on('preDeleteActiveEffect', async (activeEffect, data, userId) => {
     await game.changeLog.getDeleteData('activeEffect', { doc: activeEffect, data, userId })
+})
+
+Hooks.on('preUpdateActiveEffect', async (activeEffect, data, options, userId) => {
+    await game.changeLog.getPreUpdateData('activeEffect', { doc: activeEffect, data, options, userId })
 })
 
 Hooks.on('preUpdateActor', async (actor, data, options, userId) => {
@@ -135,6 +143,84 @@ export class ChangeLog {
 
     async getShowSender () {
         this.showSender = await Utils.getSetting('showSender')
+    }
+
+    async getCreateItem (createItemData) {
+        const { item, userId } = createItemData
+
+        const actor = game.actors.get(item?.parent?.id)
+
+        if (!actor) return
+
+        const token = actor?.token || null
+        const documentType = 'actor'
+        const key = 'itemCreated'
+        const modifiedByName = game.users.get(userId)?.name
+
+        const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor.type, key)
+
+        if (!isEveryone && !isGm && !isPlayer) return
+
+        const templateData = {
+            tokenId: token?.id || null,
+            actorId: actor?.id || null,
+            id: actor.id,
+            document1Name: actor.name,
+            document2Name: item.name,
+            documentType,
+            key,
+            modifiedByName,
+            oldValue: null,
+            newValue: true
+        }
+
+        const whisperData = {
+            actor,
+            isEveryone,
+            isGm,
+            isPlayer
+        }
+
+        this.#createChatMessage('itemCreated', templateData, whisperData)
+    }
+
+    async getDeleteItem (deleteItemData) {
+        const { item, userId } = deleteItemData
+
+        const actor = game.actors.get(item?.parent?.id)
+
+        if (!actor) return
+
+        const token = actor?.token || null
+        const documentType = 'actor'
+        const key = 'itemDeleted'
+        const modifiedByName = game.users.get(userId)?.name
+
+        const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor.type, key)
+
+        if (!isEveryone && !isGm && !isPlayer) return
+
+        const templateData = {
+            tokenId: token?.id || null,
+            actorId: actor?.id || null,
+            id: actor.id,
+            document1Name: actor.name,
+            document2Name: item.name,
+            documentType,
+            key,
+            modifiedByName,
+            oldValue: null,
+            newValue: true
+        }
+
+        const whisperData = {
+            actor,
+            isEveryone,
+            isGm,
+            isPlayer
+        }
+
+        this.#createChatMessage('itemDeleted', templateData, whisperData)
     }
 
     async getPreCreateCombatant (preCreateCombatantData) {
@@ -325,7 +411,7 @@ export class ChangeLog {
     }
 
     #getAdjustment (oldValue, newValue) {
-        if (!this.showEquation) return null
+        if (!this.showEquation) return { sign: null, adjustmentValue: null }
         const difference = (Number.isInteger(oldValue) && Number.isInteger(newValue)) ? oldValue - newValue : null
         const sign = (Number.isInteger(difference)) ? (difference < 0) ? 'fa-plus' : 'fa-minus' : null
         const adjustmentValue = (Number.isInteger(difference)) ? Math.abs(difference) : null

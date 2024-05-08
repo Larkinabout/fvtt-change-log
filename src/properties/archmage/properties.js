@@ -7,6 +7,8 @@ export const PROPERTIES = [
     'activeEffect.deleted',
     'activeEffect.disabled',
     'actor.inCombat',
+    'actor.itemCreated',
+    'actor.itemDeleted',
     'actor.name',
     'actor.system.abilities.cha.dmg',
     'actor.system.abilities.cha.lvl',
