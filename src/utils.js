@@ -58,7 +58,7 @@ export class Utils {
         const arr = str.split('.')
         for (let i = 0, n = arr.length; i < n; ++i) {
             const property = arr[i]
-            if (property in obj) {
+            if (obj && property in obj) {
                 obj = obj[property]
             } else {
                 return
