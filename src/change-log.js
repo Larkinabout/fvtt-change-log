@@ -286,7 +286,7 @@ export class ChangeLog {
         const modifiedByName = game.users.get(userId)?.name
 
         for (const key of Object.keys(flattenedObjects)) {
-            const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor.type, key)
+            const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor?.type, key)
 
             if (!isEveryone && !isGm && !isPlayer) continue
 
