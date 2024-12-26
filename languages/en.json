@@ -1,5 +1,6 @@
 {
     "changeLog.chatTabs.hint": "Messages sent by the Change Log module.",
+    "changelog.change": "Change: {change}",
     "changeLog.empty": "–",
     "changeLog.modifiedBy": "Modified By",
     "changeLog.settings.everyoneActorTypesForm.name": "Actor Types for Everyone",
