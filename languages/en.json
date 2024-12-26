@@ -19,6 +19,8 @@
     "changeLog.settings.playerPropertiesForm.hint": "Changes to log for the player",
     "changeLog.settings.showEquation.name": "Show Equation",
     "changeLog.settings.showEquation.hint": "For numerical changes, choose whether to show the equation on the chat card",
+    "changeLog.settings.onlyPlayerActors.name": "Only Player Actors",
+    "changeLog.settings.onlyPlayerActors.hint": "Only logs changes to actors that are owned by at least one player",
     "changeLog.settings.showRecipients.name": "Show Recipients",
     "changeLog.settings.showRecipients.hint": "Choose whether to show recipients on the chat card",
     "changeLog.settings.showSender.name": "Show Sender",
