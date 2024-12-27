@@ -468,7 +468,13 @@ export class ChangeLog {
         const gms = this.#getGms()
 
         const name = document1Name ? document1Name : "???";
-        const speaker = { alias: game.i18n.format('changelog.change', {change: name}) }
+        let speaker = null;
+        if (actor) {
+            speaker = ChatMessage.getSpeaker({ actor: actor });
+        }
+        if (!speaker) {
+            speaker = { alias: game.i18n.format('changelog.change', { change: name }) };
+        }
 
         let whisper = null
         if (!isEveryone) {
