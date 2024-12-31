@@ -157,7 +157,7 @@ export class ChangeLog {
         const key = 'itemCreated'
         const modifiedByName = game.users.get(userId)?.name
 
-        const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor.type, key)
+        const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor?.type, key)
 
         if (!isEveryone && !isGm && !isPlayer) return
 
@@ -196,7 +196,7 @@ export class ChangeLog {
         const key = 'itemDeleted'
         const modifiedByName = game.users.get(userId)?.name
 
-        const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor.type, key)
+        const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor?.type, key)
 
         if (!isEveryone && !isGm && !isPlayer) return
 
@@ -232,7 +232,7 @@ export class ChangeLog {
         const key = 'inCombat'
         const modifiedByName = game.users.get(userId)?.name
 
-        const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor.type, key)
+        const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor?.type, key)
 
         if (!isEveryone && !isGm && !isPlayer) return
 
@@ -342,7 +342,7 @@ export class ChangeLog {
             const obj = (propertyDocumentType === 'actor') ? actor : doc
             const newValue = Utils.getValueByDotNotation(obj, key)
 
-            const { isEveryone, isGm, isPlayer } = this.#getAudience(propertyDocumentType, actor.type, key)
+            const { isEveryone, isGm, isPlayer } = this.#getAudience(propertyDocumentType, actor?.type, key)
 
             if (!isEveryone && !isGm && !isPlayer) continue
 
@@ -383,7 +383,7 @@ export class ChangeLog {
         const actor = parentDocument || ((documentType === 'actor') ? doc : null)
         const token = actor.token || null
 
-        const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor.type, key)
+        const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor?.type, key)
 
         if (!isEveryone && !isGm && !isPlayer) return
 
