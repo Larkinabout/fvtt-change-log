@@ -442,6 +442,44 @@ export class ChangeLog {
         return true
     }
 
+    #firstOwner (doc) {
+        if (!doc) return undefined;
+
+        // Tokens derive permissions from their (synthetic) actor data.
+        const corrected =
+            doc instanceof TokenDocument
+            ? doc.actor
+            : // @ts-ignore 2589
+            doc instanceof Token
+            ? doc.document.actor
+            : doc;
+
+        const permissionObject = getProperty(corrected ?? {}, "ownership") ?? {};
+
+        const playerOwners = Object.entries(permissionObject)
+            .filter(
+            ([id, level]) =>
+                !game.users.get(id)?.isGM && game.users.get(id)?.active && level === CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
+            )
+            .map(([id]) => id);
+
+        if (playerOwners.length > 0) {
+            return game.users.get(playerOwners[0]);
+        }
+
+        return game.users.activeGM;
+    }
+
+    #isFirstOwner (doc) {
+        return game.user.id === this.#firstOwner(doc)?.id;
+    }
+
+    #uniqueArray (a) {
+        return a.filter(function(item, pos) {
+            return a.indexOf(item) == pos;
+        })
+    }
+
     async #createChatMessage (changeType, templateData, whisperData) {
         const {
             tokenId, actorId, documentId, document1Name, document2Name, documentType,
@@ -450,6 +488,7 @@ export class ChangeLog {
         const { actor, isEveryone, isGm, isPlayer } = whisperData
 
         if (!this.#isValidChange({ oldValue, newValue })) return
+        if (!this.#isFirstOwner(actor)) return
 
         const content = await renderTemplate(
             TEMPLATE.CHAT_CARD,
@@ -475,6 +514,9 @@ export class ChangeLog {
             whisper = []
             if (isGm) whisper.push(...gms)
             if (isPlayer) whisper.push(...owners)
+        }
+        if (whisper) {
+            whisper = this.#uniqueArray(whisper);
         }
 
         const flags =
