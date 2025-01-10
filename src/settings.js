@@ -82,6 +82,16 @@ export const registerSettings = function () {
         onChange: () => { game.changeLog.getShowRecipients() }
     })
 
+    game.settings.register(MODULE.ID, 'onlyPlayerActors', {
+        name: game.i18n.localize('changeLog.settings.onlyPlayerActors.name'),
+        hint: game.i18n.localize('changeLog.settings.onlyPlayerActors.hint'),
+        scope: 'world',
+        config: true,
+        type: Boolean,
+        default: false,
+        onChange: () => { game.changeLog.getOnlyPlayerActors() }
+    })
+
     game.settings.register(MODULE.ID, 'gmProperties', {
         name: 'GM Properties',
         scope: 'world',
