@@ -56,6 +56,8 @@ export class ChangeLog {
     async getCreateItem (createItemData) {
         const { item, userId } = createItemData
 
+        if (game.userId !== userId) return
+
         const actor = game.actors.get(item?.parent?.id)
 
         if (!actor) return
@@ -94,6 +96,8 @@ export class ChangeLog {
 
     async getDeleteItem (deleteItemData) {
         const { item, userId } = deleteItemData
+
+        if (game.userId !== userId) return
 
         const actor = game.actors.get(item?.parent?.id)
 
@@ -134,6 +138,8 @@ export class ChangeLog {
     async getPreCreateCombatant (preCreateCombatantData) {
         const { combatant, userId } = preCreateCombatantData
 
+        if (game.userId !== userId) return
+
         const actor = game.actors.get(combatant.actorId)
         const token = actor?.token || null
         const documentType = 'actor'
@@ -169,6 +175,8 @@ export class ChangeLog {
 
     async getPreUpdateData (documentType, preUpdateData) {
         const { doc, data, userId } = preUpdateData
+
+        if (game.userId !== userId) return
 
         const parentDocument = (documentType !== 'actor' && doc.parent?.documentName === 'Actor')
             ? doc.parent
@@ -230,6 +238,9 @@ export class ChangeLog {
 
     async getUpdateData (documentType, updateData) {
         const { doc, userId } = updateData
+
+        if (game.userId !== userId) return
+
         const derivedProperties = this.derivedPropertiesMap.get(doc.id) || []
 
         if (!derivedProperties.length) return
@@ -286,6 +297,9 @@ export class ChangeLog {
 
     async getDeleteData (documentType, deleteData) {
         const { doc, userId } = deleteData
+
+        if (game.userId !== userId) return
+
         const key = 'deleted'
         const parentDocument = (documentType !== 'actor' && doc.parent?.documentName === 'Actor') ? doc.parent : null
         const actor = parentDocument || ((documentType === 'actor') ? doc : null)
@@ -350,37 +364,6 @@ export class ChangeLog {
         return true
     }
 
-    #firstOwner (doc) {
-        if (!doc) return undefined
-
-        // Tokens derive permissions from their (synthetic) actor data.
-        const corrected =
-            doc instanceof TokenDocument
-                ? doc.actor
-                : doc instanceof Token
-                    ? doc.document.actor
-                    : doc
-
-        const permissionObject = getProperty(corrected ?? {}, 'ownership') ?? {}
-
-        const playerOwners = Object.entries(permissionObject)
-            .filter(
-                ([id, level]) =>
-                    !game.users.get(id)?.isGM && game.users.get(id)?.active && level === CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
-            )
-            .map(([id]) => id)
-
-        if (playerOwners.length > 0) {
-            return game.users.get(playerOwners[0])
-        }
-
-        return game.users.activeGM
-    }
-
-    #isFirstOwner (doc) {
-        return game.user.id === this.#firstOwner(doc)?.id
-    }
-
     #uniqueArray (a) {
         return a.filter(function (item, pos) {
             return a.indexOf(item) === pos
@@ -395,7 +378,7 @@ export class ChangeLog {
         const { actor, isEveryone, isGm, isPlayer } = whisperData
 
         if (!this.#isValidChange({ oldValue, newValue })) return
-        if (!this.#isFirstOwner(actor)) return
+        // if (!this.#isFirstOwner(actor)) return
 
         const content = await renderTemplate(
             TEMPLATE.CHAT_CARD,
