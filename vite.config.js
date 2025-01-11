@@ -37,7 +37,7 @@ export default {
         target: ['es2022'],
         terserOptions: s_COMPRESS ? { keep_classnames: true, keep_fnames: true } : undefined,
         lib: {
-            entry: './change-log.js',
+            entry: './main/module.js',
             formats: ['es'],
             fileName: 'change-log'
         }

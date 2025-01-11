@@ -21,8 +21,8 @@
   },
   "homepage": "https://github.com/Larkinabout/fvtt-change-log#readme",
   "dependencies": {
-    "@yaireo/dragsort": "^1.3.1",
-    "@yaireo/tagify": "^4.17.8",
+    "@yaireo/dragsort": "^1.3.2",
+    "@yaireo/tagify": "^4.33.0",
     "create-vite": "^4.4.1",
     "rollup": "^3.26.3"
   },

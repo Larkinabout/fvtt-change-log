@@ -1,5 +1,5 @@
 import { MODULE } from './constants.js'
-import { EveryoneActorTypesTagForm, EveryonePropertiesTagForm, GmActorTypesTagForm, GmPropertiesTagForm, PlayerPropertiesTagForm } from './tag-form.js'
+import { EveryoneActorTypesTagifyApp, EveryonePropertiesTagifyApp, GmActorTypesTagifyApp, GmPropertiesTagifyApp, PlayerPropertiesTagifyApp } from '../applications/tagify-app.js'
 
 export const registerSettings = function () {
     game.settings.registerMenu(MODULE.ID, 'gmPropertiesForm', {
@@ -7,7 +7,7 @@ export const registerSettings = function () {
         label: game.i18n.localize('changeLog.settings.gmPropertiesForm.label'),
         hint: game.i18n.localize('changeLog.settings.gmPropertiesForm.hint'),
         icon: 'fas fa-ballot-check',
-        type: GmPropertiesTagForm,
+        type: GmPropertiesTagifyApp,
         restricted: true,
         scope: 'world'
     })
@@ -17,7 +17,7 @@ export const registerSettings = function () {
         label: game.i18n.localize('changeLog.settings.gmActorTypesForm.label'),
         hint: game.i18n.localize('changeLog.settings.gmActorTypesForm.hint'),
         icon: 'fas fa-ballot-check',
-        type: GmActorTypesTagForm,
+        type: GmActorTypesTagifyApp,
         restricted: true,
         scope: 'world'
     })
@@ -27,7 +27,7 @@ export const registerSettings = function () {
         label: game.i18n.localize('changeLog.settings.everyonePropertiesForm.label'),
         hint: game.i18n.localize('changeLog.settings.everyonePropertiesForm.hint'),
         icon: 'fas fa-ballot-check',
-        type: EveryonePropertiesTagForm,
+        type: EveryonePropertiesTagifyApp,
         restricted: true,
         scope: 'world'
     })
@@ -37,7 +37,7 @@ export const registerSettings = function () {
         label: game.i18n.localize('changeLog.settings.everyoneActorTypesForm.label'),
         hint: game.i18n.localize('changeLog.settings.everyoneActorTypesForm.hint'),
         icon: 'fas fa-ballot-check',
-        type: EveryoneActorTypesTagForm,
+        type: EveryoneActorTypesTagifyApp,
         restricted: true,
         scope: 'world'
     })
@@ -47,7 +47,7 @@ export const registerSettings = function () {
         label: game.i18n.localize('changeLog.settings.playerPropertiesForm.label'),
         hint: game.i18n.localize('changeLog.settings.playerPropertiesForm.hint'),
         icon: 'fas fa-ballot-check',
-        type: PlayerPropertiesTagForm,
+        type: PlayerPropertiesTagifyApp,
         restricted: true,
         scope: 'world'
     })

@@ -7,7 +7,7 @@ const TEMPLATE_DIR = `modules/${MODULE.ID}/templates`
 
 export const TEMPLATE = {
     CHAT_CARD: `${TEMPLATE_DIR}/chat-card.hbs`,
-    TAG_FORM: `${TEMPLATE_DIR}/tag-form.hbs`
+    TAG_FORM: `${TEMPLATE_DIR}/tagify-app.hbs`
 }
 
 export const BOOLEAN_ICON = {

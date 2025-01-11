@@ -1,0 +1,26 @@
+<div id="change-log-form" class="standard-form">
+    <div class="standard-form scrollable">
+        <section class="change-log-form-col-group">
+            <div>{{label.selected}}</div>
+            <div class="change-log-form-col-group">
+                <input
+                    name="change-log-tagify"
+                    class="change-log-tagify"
+                    placeholder="{{placeholder}}"
+                />
+            </div>
+            <div class="change-log-form-row-group">
+                <button type="button" id="change-log-select-all" class="bright" data-action="selectAllTags">
+                    <i class="fa-solid fa-filter"></i>{{localize "changeLog.tagifyApp.selectAll"}}
+                </button>
+                <button type="button" id="change-log-unselect-all" class="bright tags--removeAllBtn" data-action="unselectAllTags">
+                    <i class="fa-regular fa-filter-slash"></i>{{localize "changeLog.tagifyApp.unselectAll"}}
+                </button>
+            </div>
+        </section>
+    </div>
+        <button type="submit" class="save-button">
+            <i class="fas fa-solid fa-floppy-disk"></i>{{localize "changeLog.saveAndClose"}}
+        </button>
+    </footer>
+</div>
