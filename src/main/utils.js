@@ -52,19 +52,18 @@ export class Utils {
         return property.split('.').slice(1).join('.')
     }
 
-    static getValueByDotNotation (obj, str) {
-        str = str.replace(/\[(\w+)\]/g, '.$1') // convert indexes to properties
-        str = str.replace(/^\./, '') // strip a leading dot
-        const arr = str.split('.')
-        for (let i = 0, n = arr.length; i < n; ++i) {
-            const property = arr[i]
-            if (obj && property in obj) {
-                obj = obj[property]
-            } else {
-                return
-            }
+    static getValueByDotNotation (object, key) {
+        if (!key || !object) return undefined
+        if (key in object) return object[key]
+        let target = object
+        for (const p of key.split('.')) {
+            if (!target || (typeof target !== 'object')) return undefined
+            if (p in target) target = target[p]
+            else if (Array.isArray(target)) return target.includes(p)
+            else if (target instanceof Set) return target.has(p)
+            else return undefined
         }
-        return obj
+        return target
     }
 
     /**

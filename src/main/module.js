@@ -94,6 +94,11 @@ Hooks.on('renderChatMessage', async (chatMessage, html) => {
     }
 })
 
+Hooks.on('dnd5e.renderChatMessage', async (chatMessage, html) => {
+    if (!chatMessage.getFlag('change-log', 'key')) return
+    if (!game.changeLog.showRecipients) { html.querySelector('span.subtitle')?.remove() }
+})
+
 async function undo (chatMessageId) {
     const chatMessage = game.messages.get(chatMessageId)
     const { tokenId, actorId, id, key, type, val } = chatMessage?.flags['change-log']

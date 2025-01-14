@@ -199,9 +199,10 @@ export class ChangeLog {
         }
 
         const flattenedObjects = await foundry.utils.flattenObject(data)
+        const objects = this.#flattenArrays(flattenedObjects)
         const modifiedByName = game.users.get(userId)?.name
 
-        for (const key of Object.keys(flattenedObjects)) {
+        for (const key of Object.keys(objects)) {
             const { isEveryone, isGm, isPlayer } = this.#getAudience(documentType, actor?.type, key)
 
             if (!isEveryone && !isGm && !isPlayer) continue
@@ -330,6 +331,20 @@ export class ChangeLog {
         }
 
         this.#createChatMessage('delete', templateData, whisperData)
+    }
+
+    #flattenArrays (obj) {
+        for (const [key, value] of Object.entries(obj)) {
+            if (Array.isArray(value)) {
+                for (const arrayValue of value) {
+                    if (typeof arrayValue === 'string') {
+                        obj[`${key}.${arrayValue}`] = true
+                    }
+                }
+            }
+        }
+
+        return obj
     }
 
     #getAdjustment (oldValue, newValue) {
