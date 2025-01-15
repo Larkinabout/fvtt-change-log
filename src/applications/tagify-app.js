@@ -28,7 +28,7 @@ export class TagifyApp extends HandlebarsApplicationMixin(ApplicationV2) {
         id: 'change-log-tagify-app',
         position: {
             width: 600,
-            height: 680
+            height: 800
         },
         tag: 'form',
         window: {
@@ -198,7 +198,7 @@ Hooks.on('renderTagifyApp', (app, html, options) => {
 
         TagifyApp.tagify.dropdown.show()
         const dropdownLabelElement = document.createElement('div')
-        dropdownLabelElement.classList.add('change-log-form-label')
+        dropdownLabelElement.classList.add('change-log-tagify-app-label')
         dropdownLabelElement.innerHTML = availableLabel
         TagifyApp.tagify.DOM.scope.parentNode.appendChild(dropdownLabelElement)
         TagifyApp.tagify.DOM.scope.parentNode.appendChild(TagifyApp.tagify.DOM.dropdown)
@@ -221,7 +221,7 @@ export class EveryoneActorTypesTagifyApp extends TagifyApp {
 
     async _prepareContext () {
         return {
-            description: game.i18n.localize('changeLog.tagifyApp.everyoneActorTypes.description'),
+            description: game.i18n.localize('changeLog.tagifyApp.types.description'),
             label: {
                 clear: game.i18n.localize('changeLog.tagifyApp.everyoneActorTypes.label.clear'),
                 selectAll: game.i18n.localize('changeLog.tagifyApp.everyoneActorTypes.label.selectAll'),
@@ -247,7 +247,7 @@ export class EveryonePropertiesTagifyApp extends TagifyApp {
 
     async _prepareContext () {
         return {
-            description: game.i18n.localize('changeLog.tagifyApp.everyoneProperties.description'),
+            description: game.i18n.localize('changeLog.tagifyApp.properties.description'),
             label: {
                 selected: game.i18n.localize('changeLog.tagifyApp.everyoneProperties.label.selected')
             }
@@ -272,7 +272,7 @@ export class GmActorTypesTagifyApp extends TagifyApp {
 
     async _prepareContext () {
         return {
-            description: game.i18n.localize('changeLog.tagifyApp.gmActorTypes.description'),
+            description: game.i18n.localize('changeLog.tagifyApp.types.description'),
             label: {
                 selected: game.i18n.localize('changeLog.tagifyApp.gmActorTypes.label.selected')
             }
@@ -296,7 +296,7 @@ export class GmPropertiesTagifyApp extends TagifyApp {
 
     async _prepareContext () {
         return {
-            description: game.i18n.localize('changeLog.tagifyApp.gmProperties.description'),
+            description: game.i18n.localize('changeLog.tagifyApp.properties.description'),
             label: {
                 selected: game.i18n.localize('changeLog.tagifyApp.gmProperties.label.selected')
             }
@@ -320,7 +320,7 @@ export class PlayerPropertiesTagifyApp extends TagifyApp {
 
     async _prepareContext () {
         return {
-            description: game.i18n.localize('changeLog.tagifyApp.playerProperties.description'),
+            description: game.i18n.localize('changeLog.tagifyApp.properties.description'),
             label: {
                 selected: game.i18n.localize('changeLog.tagifyApp.playerProperties.label.selected')
             }

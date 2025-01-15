@@ -58,17 +58,17 @@
     justify-content: center;
 }
 
-.change-log-form-label {
+.change-log-tagify-app-label {
     margin-top: 0.2rem;
 }
 
-.change-log-form-col-group {
+.change-log-col-group {
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
 }
 
-.change-log-form-row-group {
+.change-log-row-group {
     display: flex;
     flex-direction: row;
     gap: 0.2rem;
@@ -80,6 +80,12 @@
 
 .change-log-tagify-app .standard-form {
     height: 100%;
+}
+
+.change-log-tagify-app .change-log-tagify-app-description {
+    border-bottom: 1px solid var(--color-border);
+    margin: 0 0 0.5rem 0;
+    padding: 0.5rem 0;
 }
 
 .tagify.change-log-tagify {

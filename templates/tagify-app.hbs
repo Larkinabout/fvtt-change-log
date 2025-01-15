@@ -1,15 +1,16 @@
-<div id="change-log-form" class="standard-form">
+<div id="change-log-tagify-app" class="standard-form">
     <div class="standard-form scrollable">
-        <section class="change-log-form-col-group">
+        <section class="change-log-col-group">
+            <p class="change-log-tagify-app-description">{{{description}}}</p>
             <div>{{label.selected}}</div>
-            <div class="change-log-form-col-group">
+            <div class="change-log-col-group">
                 <input
                     name="change-log-tagify"
                     class="change-log-tagify"
                     placeholder="{{placeholder}}"
                 />
             </div>
-            <div class="change-log-form-row-group">
+            <div class="change-log-row-group">
                 <button type="button" id="change-log-select-all" class="bright" data-action="selectAllTags">
                     <i class="fa-solid fa-filter"></i>{{localize "changeLog.tagifyApp.selectAll"}}
                 </button>
