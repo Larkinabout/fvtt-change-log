@@ -52,6 +52,20 @@ export class Utils {
         return property.split('.').slice(1).join('.')
     }
 
+    static getTypeByDotNotation (object, key) {
+        if (!key || !object) return undefined
+        if (key in object) return object[key]
+        let target = object
+        for (const p of key.split('.')) {
+            if (!target || (typeof target !== 'object')) return undefined
+            if (p in target) target = target[p]
+            else if (Array.isArray(target)) return 'array'
+            else if (target instanceof Set) return 'set'
+            else return undefined
+        }
+        return typeof target
+    }
+
     static getValueByDotNotation (object, key) {
         if (!key || !object) return undefined
         if (key in object) return object[key]

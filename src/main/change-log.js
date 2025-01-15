@@ -199,7 +199,7 @@ export class ChangeLog {
         }
 
         const flattenedObjects = await foundry.utils.flattenObject(data)
-        const objects = this.#flattenArrays(flattenedObjects)
+        const objects = this.#flattenArrays(flattenedObjects, doc)
         const modifiedByName = game.users.get(userId)?.name
 
         for (const key of Object.keys(objects)) {
@@ -209,6 +209,9 @@ export class ChangeLog {
 
             const oldValue = Utils.getValueByDotNotation(doc, key)
             const newValue = Utils.getValueByDotNotation(data, key)
+
+            if (!this.#isValidChange({ oldValue, newValue })) continue
+
             const { sign, adjustmentValue } = this.#getAdjustment(oldValue, newValue)
 
             const templateData = {
@@ -261,6 +264,8 @@ export class ChangeLog {
             const propertyDocumentType = Utils.getPropertyDocumentType(property)
             const obj = (propertyDocumentType === 'actor') ? actor : doc
             const newValue = Utils.getValueByDotNotation(obj, key)
+
+            if (!this.#isValidChange({ oldValue, newValue })) continue
 
             const { isEveryone, isGm, isPlayer } = this.#getAudience(propertyDocumentType, actor?.type, key)
 
@@ -333,12 +338,22 @@ export class ChangeLog {
         this.#createChatMessage('delete', templateData, whisperData)
     }
 
-    #flattenArrays (obj) {
+    #flattenArrays (obj, doc) {
         for (const [key, value] of Object.entries(obj)) {
             if (Array.isArray(value)) {
                 for (const arrayValue of value) {
                     if (typeof arrayValue === 'string') {
                         obj[`${key}.${arrayValue}`] = true
+                    }
+                }
+
+                // Get array/set properties from the document to identify ones removed
+                const docValue = Array.from(foundry.utils.getProperty(doc, key) ?? [])
+                for (const arrayValue of docValue) {
+                    if (typeof arrayValue === 'string') {
+                        if (!obj[`${key}.${arrayValue}`]) {
+                            obj[`${key}.${arrayValue}`] = false
+                        }
                     }
                 }
             }
@@ -393,7 +408,6 @@ export class ChangeLog {
         const { actor, isEveryone, isGm, isPlayer } = whisperData
 
         if (!this.#isValidChange({ oldValue, newValue })) return
-        // if (!this.#isFirstOwner(actor)) return
 
         const content = await renderTemplate(
             TEMPLATE.CHAT_CARD,

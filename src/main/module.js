@@ -121,5 +121,24 @@ async function undo (chatMessageId) {
         break
     }
 
-    if (doc) await doc.update({ [key]: val })
+    if (!doc) return
+
+    let updateKey = key
+    let updateValue = val
+    const dataType = Utils.getTypeByDotNotation(doc, key)
+
+    if (dataType === 'array' || dataType === 'set') {
+        const arrayValue = key.split('.').pop()
+        updateKey = key.split('.').slice(0, -1).join('.')
+        const arr = Array.from(Utils.getValueByDotNotation(doc, updateKey))
+        if (val) {
+            arr.push(arrayValue)
+        } else {
+            const index = arr.findIndex(a => a === arrayValue)
+            arr.splice(index, 1)
+        }
+        updateValue = arr
+    }
+
+    await doc.update({ [updateKey]: updateValue })
 }
