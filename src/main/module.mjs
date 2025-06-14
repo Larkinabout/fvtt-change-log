@@ -36,20 +36,21 @@ Hooks.on("chat-tabs.init", () => {
 
 /**
  * Add "Undo Change" context menu item to chat log entries.
- * @param {JQuery} html The chat log HTML.
+ * @param {HTML} html The chat log HTML.
  * @param {Array} menuItems The context menu items.
  */
-Hooks.on("getChatLogEntryContext", async (html, menuItems) => {
+Hooks.on("getChatMessageContextOptions", async (html, menuItems) => {
   const menuItem = {
     name: "Undo Change",
-    icon: '<i class="fas fa-rotate-left"></i>',
+    icon: '<i class="fa-solid fa-rotate-left"></i>',
     condition: li => {
-      const message = game.messages.get(li.data("messageId"));
+      if ( !li.dataset.messageId ) return false;
+      const message = game.messages.get(li.dataset.messageId);
       const val = message.getFlag("change-log", "val");
       return val !== null && val !== undefined;
     },
     callback: li => {
-      undo(li.data("messageId"));
+      undo(li.dataset.messageId);
     }
   };
 
@@ -228,11 +229,14 @@ Hooks.on("dnd5e.renderChatMessage", async (chatMessage, html) => {
  */
 async function undo(chatMessageId) {
   const chatMessage = game.messages.get(chatMessageId);
-  const { tokenId, actorId, id, key, type, val } = chatMessage?.flags["change-log"];
+  if ( !chatMessage || !chatMessage.flags || !chatMessage.flags["change-log"] ) return;
+  const { tokenId, actorId, id, key, type, val } = chatMessage.flags["change-log"];
 
   if ( !id || val === null ) return;
 
-  const token = (tokenId) ? game.scenes.map(scene => scene.tokens.find(token => token.id === tokenId)).filter(token => !!token)[0] : null;
+  const token = (tokenId)
+    ? game.scenes.map(scene => scene.tokens.find(token => token.id === tokenId)).filter(token => !!token)[0]
+    : null;
   const actor = (token) ? token.actor : (actorId) ? game.actors.get(actorId) : null;
 
   let doc;
