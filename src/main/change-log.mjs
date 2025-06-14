@@ -200,7 +200,7 @@ export class ChangeLog {
       isPlayer
     };
 
-    this.#createChatMessage("itemDeleted", templateData, whisperData);
+    this.#createChatMessage("itemDeleted", templateData, whisperData, item);
   }
 
   /* -------------------------------------------- */
@@ -558,9 +558,10 @@ export class ChangeLog {
    * @param {string} changeType
    * @param {object} templateData
    * @param {object} whisperData
+   * @param {object} [entity=null] Optional entity data to include in the message flags.
    * @returns {Promise<void>}
    */
-  async #createChatMessage(changeType, templateData, whisperData) {
+  async #createChatMessage(changeType, templateData, whisperData, entity = null) {
     const {
       tokenId, actorId, documentId, document1Name, document2Name, documentType,
       key, oldValue, newValue, sign, adjustmentValue, modifiedByName
@@ -601,6 +602,8 @@ export class ChangeLog {
     const flags =
             {
               "change-log": {
+                actorId,
+                tokenId,
                 id: documentId,
                 key,
                 type: documentType,
@@ -610,8 +613,10 @@ export class ChangeLog {
                 module: "change-log"
               }
             };
-    flags["change-log"].tokenId = tokenId;
-    flags["change-log"].actorId = actorId;
+
+    if ( entity ) {
+      flags["change-log"].entityData = entity;
+    }
 
     await ChatMessage.create({ content, speaker, whisper, flags });
   }

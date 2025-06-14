@@ -47,7 +47,8 @@ Hooks.on("getChatMessageContextOptions", async (html, menuItems) => {
       if ( !li.dataset.messageId ) return false;
       const message = game.messages.get(li.dataset.messageId);
       const val = message.getFlag("change-log", "val");
-      return val !== null && val !== undefined;
+      const hasEntityData = message.flags?.["change-log"]?.entityData;
+      return (val !== null && val !== undefined) || hasEntityData;
     },
     callback: li => {
       undo(li.dataset.messageId);
@@ -230,14 +231,19 @@ Hooks.on("dnd5e.renderChatMessage", async (chatMessage, html) => {
 async function undo(chatMessageId) {
   const chatMessage = game.messages.get(chatMessageId);
   if ( !chatMessage || !chatMessage.flags || !chatMessage.flags["change-log"] ) return;
-  const { tokenId, actorId, id, key, type, val } = chatMessage.flags["change-log"];
+  const { tokenId, actorId, id, key, type, val, entityData } = chatMessage.flags["change-log"];
 
-  if ( !id || val === null ) return;
+  if ( (!id || val === null) && !entityData ) return;
 
   const token = (tokenId)
     ? game.scenes.map(scene => scene.tokens.find(token => token.id === tokenId)).filter(token => !!token)[0]
     : null;
   const actor = (token) ? token.actor : (actorId) ? game.actors.get(actorId) : null;
+
+  if ( entityData ) {
+    actor.createEmbeddedDocuments("Item", [entityData]);
+    return;
+  }
 
   let doc;
   switch (type) {
