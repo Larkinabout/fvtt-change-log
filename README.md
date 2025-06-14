@@ -26,13 +26,6 @@ A Foundry VTT module to log changes to the chat log.
 3. In the Manifest URL field, paste: `https://github.com/Larkinabout/fvtt-change-log/releases/latest/download/module.json`
 4. Click **Install** next to the pasted Manifest URL
 
-# Recommended Modules
-## [Customizable Chat Tabs](https://foundryvtt.com/packages/chat-tabs)
-The [Customizable Chat Tabs](https://foundryvtt.com/packages/chat-tabs) module enables Change Log messages to be moved to their own tab.
-
-![Change Log Chat Tabs](./.github/readme/change-log-chat-tabs.png)
-![Change Log Chat Tabs Settings](./.github/readme/change-log-chat-tabs-settings.png)
-
 # Supported Systems
 Change Log is intended to be system-agnostic, however only the systems listed are currently supported with pre-populated lists and friendly property names:
 
@@ -78,3 +71,5 @@ If you would like your system to be supported or a property is not listed for a 
 - Group simultaneous changes into one chat card.
 - Replace current method of hiding chat messages.
 - Allow users to define custom properties to appear in lists and with friendly names.
+- Move change log messages into their own tab.
+- Allow export of change-log messages.

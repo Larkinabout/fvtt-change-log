@@ -1,6 +1,6 @@
-import { DELIMITER, TEMPLATE } from '../main/constants.js'
-import { ACTOR_TYPES, PROPERTIES } from '../main/system-handler.js'
-import { Utils } from '../main/utils.js'
+import { DELIMITER, TEMPLATE } from '../main/constants.mjs'
+import { ACTOR_TYPES, PROPERTIES } from '../main/system-handler.mjs'
+import { Utils } from '../main/utils.mjs'
 import DragSort from '@yaireo/dragsort'
 import Tagify from '@yaireo/tagify'
 

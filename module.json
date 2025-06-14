@@ -6,7 +6,7 @@
     "library": "false",
     "compatibility": {
         "minimum": 12.330,
-        "verified": 12.331
+        "verified": 13.445
     },
     "authors": [
         {
@@ -52,17 +52,6 @@
             "path": "languages/swade/en.json"
         }
     ],
-    "relationships": {
-        "recommends": {
-            "id": "chat-tabs",
-            "manifest": "https://github.com/mclemente/fvtt-chat-tabs/releases/latest/download/module.json",
-            "type": "module",
-            "compatibility": {
-                "minimum": "1.3.2",
-                "verified": "1.3.2"
-            }
-        }
-    },
     "url": "This is auto replaced",
     "manifest": "This is auto replaced",
     "download": "This is auto replaced",

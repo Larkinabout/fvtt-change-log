@@ -40,6 +40,10 @@
     color: rgba(0,0,0, 0.3);
 }
 
+.change-log-card-values  i {
+    margin-top: 2px;
+}
+
 .change-log-card-old-value {
     display: flex;
     flex: 1;
@@ -127,7 +131,7 @@
 
 .change-log-tagify .tagify__tag__removeBtn::after {
     content: "\f00d";
-    font-family: "Font Awesome 5 Free";
+    font-family: "Font Awesome 6 Pro";
     font-size: var(--font-size-10);
     font-weight: 700;
     padding-bottom: 2px;
