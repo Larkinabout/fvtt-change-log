@@ -192,14 +192,18 @@ Hooks.on("updateItem", async (item, data, options, userId) => {
  * @param {ChatMessage} chatMessage
  * @param {JQuery} html
  */
-Hooks.on("renderChatMessage", async (chatMessage, html) => {
+Hooks.on("renderChatMessageHTML", async (chatMessage, html, options) => {
   if ( !chatMessage.getFlag("change-log", "key") ) return;
   if ( chatMessage.whisper.length && !chatMessage.whisper.includes(game.user.id) ) { html.css("display", "none"); }
-  if ( !game.changeLog.showRecipients ) { html.find(".whisper-to")?.remove(); }
+  if ( !game.changeLog.showRecipients ) { html.querySelector(".whisper-to")?.remove(); }
   if ( !game.changeLog.showSender ) {
-    html.find(".message-sender")?.remove();
-    html.css("position", "relative");
-    html.find(".message-header")?.css({ position: "absolute", right: "6px" });
+    html.querySelector(".message-sender")?.remove();
+    html.style.position = "relative";
+    const messageHeader = html.querySelector(".message-header");
+    if ( messageHeader ) {
+      messageHeader.style.position = "absolute";
+      messageHeader.style.right = "6px";
+    }
   }
 });
 

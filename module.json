@@ -14,7 +14,7 @@
             "url": "https://github.com/Larkinabout"
         }
     ],
-    "esmodules": ["dist/change-log.js"],
+    "esmodules": ["dist/change-log.min.mjs"],
     "styles": [
         "styles/change-log.css",
         "styles/lib/tagify/tagify.css",

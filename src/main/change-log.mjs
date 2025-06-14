@@ -15,7 +15,7 @@ export class ChangeLog {
    */
   async init() {
     Promise.all([
-      loadTemplates([TEMPLATE.CHAT_CARD, TEMPLATE.TAG_FORM]),
+      foundry.applications.handlebars.loadTemplates([TEMPLATE.CHAT_CARD, TEMPLATE.TAG_FORM]),
       this.getEveryoneActorTypes(),
       this.getEveryoneProperties(),
       this.getGmActorTypes(),
@@ -569,7 +569,7 @@ export class ChangeLog {
 
     if ( !this.#isValidChange({ oldValue, newValue }) ) return;
 
-    const content = await renderTemplate(
+    const content = await foundry.applications.handlebars.renderTemplate(
       TEMPLATE.CHAT_CARD,
       {
         document1Name,
