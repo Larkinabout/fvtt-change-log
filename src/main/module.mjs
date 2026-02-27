@@ -21,6 +21,21 @@ Hooks.on("init", () => {
 /* -------------------------------------------- */
 
 /**
+ * Override chat notifications to suppress them for change log messages the user should not see.
+ */
+Hooks.on("ready", () => {
+  const original = ui.chat.notify.bind(ui.chat);
+  ui.chat.notify = (message, options) => {
+    if ( message.getFlag("change-log", "key") && message.whisper.length && !message.whisper.includes(game.user.id) ) {
+      return;
+    }
+    return original(message, options);
+  };
+});
+
+/* -------------------------------------------- */
+
+/**
  * Register the Change Log tab in chat-tabs.
  */
 Hooks.on("chat-tabs.init", () => {
@@ -196,7 +211,7 @@ Hooks.on("updateItem", async (item, data, options, userId) => {
  */
 Hooks.on("renderChatMessageHTML", async (chatMessage, html, options) => {
   if ( !chatMessage.getFlag("change-log", "key") ) return;
-  if ( chatMessage.whisper.length && !chatMessage.whisper.includes(game.user.id) ) { html.css("display", "none"); }
+  if ( chatMessage.whisper.length && !chatMessage.whisper.includes(game.user.id) ) { html.style.display = "none"; }
   if ( !game.changeLog.showRecipients ) { html.querySelector(".whisper-to")?.remove(); }
   if ( !game.changeLog.showSender ) {
     html.querySelector(".message-sender")?.remove();
