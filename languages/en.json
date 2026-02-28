@@ -45,5 +45,5 @@
     "changeLog.tagifyApp.playerProperties.title": "Changes for Player",
     "changeLog.tagifyApp.playerProperties.label.available": "Available Properties",
     "changeLog.tagifyApp.playerProperties.label.selected": "Selected Properties",
-    "changeLog.undo": "Undo Change"
+    "changeLog.undo": "Undo Changes"
 }

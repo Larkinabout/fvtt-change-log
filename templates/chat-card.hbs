@@ -1,16 +1,19 @@
 <div class="change-log-card-content" data-tooltip="{{tooltip}}">
     {{#if document1Name}}<span class="change-log-card-document1">{{document1Name}}</span>{{/if}}
-    {{#if document2Name}}<span class="change-log-card-document2">{{document2Name}}</span>{{/if}}
-    {{#if propertyName}}<span class="change-log-card-property">{{propertyName}}</span>{{/if}}
-    <div class="change-log-card-values">
-        {{#if oldValue includeZero=true}}
-        <div class="change-log-card-old-value">{{{oldValue}}}</div>
-        <i class="fa {{sign}}"></i>
-        {{/if}}
-        {{#if adjustmentValue includeZero=true}}
-        <div class="change-log-card-adjustment-value">{{{adjustmentValue}}}</div>
-        <i class="fa fa-arrow-right"></i>
-        {{/if}}
-        {{#if newValue includeZero=true}}<div class="change-log-card-new-value">{{{newValue}}}</div>{{/if}}
+    {{#each changes}}
+    <div class="change-log-card-change">
+        {{#if document2Name}}<span class="change-log-card-document2">{{document2Name}} &middot; </span>{{/if}}<span class="change-log-card-property">{{propertyName}}</span>
+        <div class="change-log-card-values">
+            {{#if oldValue includeZero=true}}
+            <div class="change-log-card-old-value">{{{oldValue}}}</div>
+            <i class="fa {{sign}}"></i>
+            {{/if}}
+            {{#if adjustmentValue includeZero=true}}
+            <div class="change-log-card-adjustment-value">{{{adjustmentValue}}}</div>
+            <i class="fa fa-arrow-right"></i>
+            {{/if}}
+            {{#if newValue includeZero=true}}<div class="change-log-card-new-value">{{{newValue}}}</div>{{/if}}
+        </div>
     </div>
+    {{/each}}
 </div>

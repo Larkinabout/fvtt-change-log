@@ -26,7 +26,9 @@ Hooks.on("init", () => {
 Hooks.on("ready", () => {
   const original = ui.chat.notify.bind(ui.chat);
   ui.chat.notify = (message, options) => {
-    if ( message.getFlag("change-log", "key") && message.whisper.length && !message.whisper.includes(game.user.id) ) {
+    const changeLogFlags = message.flags?.["change-log"];
+    const isChangeLog = changeLogFlags?.key || changeLogFlags?.changes;
+    if ( isChangeLog && message.whisper.length && !message.whisper.includes(game.user.id) ) {
       return;
     }
     return original(message, options);
@@ -56,14 +58,21 @@ Hooks.on("chat-tabs.init", () => {
  */
 Hooks.on("getChatMessageContextOptions", async (html, menuItems) => {
   const menuItem = {
-    name: "Undo Change",
+    name: game.i18n.localize("changeLog.undo"),
     icon: '<i class="fa-solid fa-rotate-left"></i>',
     condition: li => {
       if ( !li.dataset.messageId ) return false;
       const message = game.messages.get(li.dataset.messageId);
-      const val = message.getFlag("change-log", "val");
-      const hasEntityData = message.flags?.["change-log"]?.entityData;
-      return (val !== null && val !== undefined) || hasEntityData;
+      const changeLogFlags = message.flags?.["change-log"];
+      if ( !changeLogFlags ) return false;
+
+      // New format: check if any change has val or entityData
+      if ( changeLogFlags.changes ) {
+        return changeLogFlags.changes.some(c => (c.val !== null && c.val !== undefined) || c.entityData);
+      }
+
+      // Legacy format
+      return (changeLogFlags.val !== null && changeLogFlags.val !== undefined) || !!changeLogFlags.entityData;
     },
     callback: li => {
       undo(li.dataset.messageId);
@@ -210,7 +219,8 @@ Hooks.on("updateItem", async (item, data, options, userId) => {
  * @param {JQuery} html
  */
 Hooks.on("renderChatMessageHTML", async (chatMessage, html, options) => {
-  if ( !chatMessage.getFlag("change-log", "key") ) return;
+  const changeLogFlags = chatMessage.flags?.["change-log"];
+  if ( !changeLogFlags?.key && !changeLogFlags?.changes ) return;
   if ( chatMessage.whisper.length && !chatMessage.whisper.includes(game.user.id) ) { html.style.display = "none"; }
   if ( !game.changeLog.showRecipients ) { html.querySelector(".whisper-to")?.remove(); }
   if ( !game.changeLog.showSender ) {
@@ -232,7 +242,8 @@ Hooks.on("renderChatMessageHTML", async (chatMessage, html, options) => {
  * @param {HTMLElement} html
  */
 Hooks.on("dnd5e.renderChatMessage", async (chatMessage, html) => {
-  if ( !chatMessage.getFlag("change-log", "key") ) return;
+  const changeLogFlags = chatMessage.flags?.["change-log"];
+  if ( !changeLogFlags?.key && !changeLogFlags?.changes ) return;
   if ( !game.changeLog.showRecipients ) { html.querySelector("span.subtitle")?.remove(); }
 });
 
@@ -246,8 +257,37 @@ Hooks.on("dnd5e.renderChatMessage", async (chatMessage, html) => {
 async function undo(chatMessageId) {
   const chatMessage = game.messages.get(chatMessageId);
   if ( !chatMessage || !chatMessage.flags || !chatMessage.flags["change-log"] ) return;
-  const { tokenId, actorId, id, key, type, val, entityData } = chatMessage.flags["change-log"];
 
+  const changeLogFlags = chatMessage.flags["change-log"];
+
+  // New format: array of changes
+  if ( changeLogFlags.changes ) {
+    const changes = [...changeLogFlags.changes].reverse();
+    for ( const change of changes ) {
+      await undoSingleChange(change);
+    }
+    return;
+  }
+
+  // Legacy format: single change
+  await undoSingleChange(changeLogFlags);
+}
+
+/* -------------------------------------------- */
+
+/**
+ * Undo a single change entry.
+ * @param {object} changeData The change data.
+ * @param {string} changeData.tokenId The token ID.
+ * @param {string} changeData.actorId The actor ID.
+ * @param {string} changeData.id The document ID.
+ * @param {string} changeData.key The property key.
+ * @param {string} changeData.type The document type.
+ * @param {*} changeData.val The original value.
+ * @param {object} changeData.entityData The entity data for item recreation.
+ * @returns {Promise<void>}
+ */
+async function undoSingleChange({ tokenId, actorId, id, key, type, val, entityData }) {
   if ( (!id || val === null) && !entityData ) return;
 
   const token = (tokenId)

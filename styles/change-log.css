@@ -9,19 +9,26 @@
     flex-direction: column;
 }
 
-.change-log-card-document1, .change-log-card-document2 {
+.change-log-card-document1 {
     display: flex;
     flex: 1;
-}
-
-.change-log-card-document1 {
     font-family: var(--font-system-primary);
     font-weight: bold;
 }
 
-.change-log-card-property {
-    display: flex;
-    flex: 1;
+.change-log-card-change + .change-log-card-change {
+    margin-top: 0.15rem;
+    padding-top: 0.15rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.change-log-card-change .change-log-card-document2 {
+    display: inline;
+    font-style: italic;
+}
+
+.change-log-card-change .change-log-card-property {
+    display: inline;
     font-style: italic;
 }
 

@@ -5,6 +5,8 @@ import { Utils } from "./utils.mjs";
 export class ChangeLog {
   constructor() {
     this.derivedPropertiesMap = new Map();
+    this.messageBuffer = new Map();
+    this.flushTimer = null;
   }
 
   /* -------------------------------------------- */
@@ -135,7 +137,7 @@ export class ChangeLog {
     const templateData = {
       tokenId: token?.id || null,
       actorId: actor?.id || null,
-      id: actor.id,
+      documentId: actor.id,
       document1Name: actor.name,
       document2Name: item.name,
       documentType,
@@ -152,7 +154,7 @@ export class ChangeLog {
       isPlayer
     };
 
-    this.#createChatMessage("itemCreated", templateData, whisperData);
+    this.#queueChange("itemCreated", templateData, whisperData);
   }
 
   /* -------------------------------------------- */
@@ -183,7 +185,7 @@ export class ChangeLog {
     const templateData = {
       tokenId: token?.id || null,
       actorId: actor?.id || null,
-      id: actor.id,
+      documentId: actor.id,
       document1Name: actor.name,
       document2Name: item.name,
       documentType,
@@ -200,7 +202,7 @@ export class ChangeLog {
       isPlayer
     };
 
-    this.#createChatMessage("itemDeleted", templateData, whisperData, item);
+    this.#queueChange("itemDeleted", templateData, whisperData, item);
   }
 
   /* -------------------------------------------- */
@@ -228,7 +230,7 @@ export class ChangeLog {
     const templateData = {
       tokenId: token?.id || null,
       actorId: actor?.id || null,
-      id: actor.id,
+      documentId: actor.id,
       document1Name: actor.name,
       document2Name: null,
       documentType,
@@ -245,7 +247,7 @@ export class ChangeLog {
       isPlayer
     };
 
-    this.#createChatMessage("preCreateCombatant", templateData, whisperData);
+    this.#queueChange("preCreateCombatant", templateData, whisperData);
   }
 
   /* -------------------------------------------- */
@@ -319,7 +321,7 @@ export class ChangeLog {
         isPlayer
       };
 
-      this.#createChatMessage("preUpdate", templateData, whisperData);
+      this.#queueChange("preUpdate", templateData, whisperData);
     }
   }
 
@@ -386,7 +388,7 @@ export class ChangeLog {
         isPlayer
       };
 
-      this.#createChatMessage("update", templateData, whisperData);
+      this.#queueChange("update", templateData, whisperData);
     }
 
     this.derivedPropertiesMap.delete(doc.id);
@@ -434,7 +436,7 @@ export class ChangeLog {
       isPlayer
     };
 
-    this.#createChatMessage("delete", templateData, whisperData);
+    this.#queueChange("delete", templateData, whisperData);
   }
 
   /* -------------------------------------------- */
@@ -554,14 +556,13 @@ export class ChangeLog {
   /* -------------------------------------------- */
 
   /**
-   * Create a chat message for a change.
+   * Queue a change for batched chat message creation.
    * @param {string} changeType
    * @param {object} templateData
    * @param {object} whisperData
    * @param {object} [entity=null] Optional entity data to include in the message flags.
-   * @returns {Promise<void>}
    */
-  async #createChatMessage(changeType, templateData, whisperData, entity = null) {
+  #queueChange(changeType, templateData, whisperData, entity = null) {
     const {
       tokenId, actorId, documentId, document1Name, document2Name, documentType,
       key, oldValue, newValue, sign, adjustmentValue, modifiedByName
@@ -570,24 +571,8 @@ export class ChangeLog {
 
     if ( !this.#isValidChange({ oldValue, newValue }) ) return;
 
-    const content = await foundry.applications.handlebars.renderTemplate(
-      TEMPLATE.CHAT_CARD,
-      {
-        document1Name,
-        document2Name,
-        propertyName: Utils.getPropertyName(`${documentType}.${key}`),
-        oldValue: Utils.getPropertyValue(oldValue),
-        newValue: Utils.getPropertyValue(newValue),
-        sign: sign || "fa-arrow-right",
-        adjustmentValue,
-        tooltip: `<div>${game.i18n.localize("changeLog.modifiedBy")}: ${modifiedByName}</div>`
-      }
-    );
-
     const owners = this.#getOwners(actor);
     const gms = this.#getGms();
-
-    const speaker = { alias: "Change Log" };
 
     let whisper = null;
     if ( !isEveryone ) {
@@ -599,25 +584,95 @@ export class ChangeLog {
       whisper = this.#uniqueArray(whisper);
     }
 
-    const flags =
-            {
-              "change-log": {
-                actorId,
-                tokenId,
-                id: documentId,
-                key,
-                type: documentType,
-                val: (changeType === "preUpdate") ? oldValue : null
-              },
-              "chat-tabs": {
-                module: "change-log"
-              }
-            };
+    const bufferKey = `${document1Name}|${JSON.stringify(whisper)}`;
 
-    if ( entity ) {
-      flags["change-log"].entityData = entity;
+    if ( !this.messageBuffer.has(bufferKey) ) {
+      this.messageBuffer.set(bufferKey, {
+        document1Name,
+        modifiedByName,
+        whisper,
+        changes: []
+      });
     }
 
-    await ChatMessage.create({ content, speaker, whisper, flags });
+    const group = this.messageBuffer.get(bufferKey);
+    group.changes.push({
+      document2Name,
+      propertyName: Utils.getPropertyName(`${documentType}.${key}`),
+      oldValue: Utils.getPropertyValue(oldValue),
+      newValue: Utils.getPropertyValue(newValue),
+      sign: sign || "fa-arrow-right",
+      adjustmentValue,
+      actorId,
+      tokenId,
+      id: documentId,
+      key,
+      type: documentType,
+      val: (changeType === "preUpdate") ? oldValue : null,
+      entityData: entity || null
+    });
+
+    if ( this.flushTimer ) clearTimeout(this.flushTimer);
+    this.flushTimer = setTimeout(() => this.#flushBuffer(), 250);
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Flush the message buffer, creating grouped ChatMessages.
+   * @returns {Promise<void>}
+   */
+  async #flushBuffer() {
+    this.flushTimer = null;
+    const buffer = new Map(this.messageBuffer);
+    this.messageBuffer.clear();
+
+    for ( const [, group] of buffer ) {
+      const { document1Name, modifiedByName, whisper, changes } = group;
+
+      const templateChanges = changes.map(change => ({
+        document2Name: change.document2Name,
+        propertyName: change.propertyName,
+        oldValue: change.oldValue,
+        newValue: change.newValue,
+        sign: change.sign,
+        adjustmentValue: change.adjustmentValue
+      }));
+
+      const content = await foundry.applications.handlebars.renderTemplate(
+        TEMPLATE.CHAT_CARD,
+        {
+          document1Name,
+          tooltip: `<div>${game.i18n.localize("changeLog.modifiedBy")}: ${modifiedByName}</div>`,
+          changes: templateChanges
+        }
+      );
+
+      const flagChanges = changes.map(change => {
+        const flagChange = {
+          actorId: change.actorId,
+          tokenId: change.tokenId,
+          id: change.id,
+          key: change.key,
+          type: change.type,
+          val: change.val
+        };
+        if ( change.entityData ) flagChange.entityData = change.entityData;
+        return flagChange;
+      });
+
+      const flags = {
+        "change-log": {
+          changes: flagChanges
+        },
+        "chat-tabs": {
+          module: "change-log"
+        }
+      };
+
+      const speaker = { alias: "Change Log" };
+
+      await ChatMessage.create({ content, speaker, whisper, flags });
+    }
   }
 }
