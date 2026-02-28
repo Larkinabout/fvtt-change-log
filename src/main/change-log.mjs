@@ -24,6 +24,7 @@ export class ChangeLog {
       this.getGmProperties(),
       this.getPlayerProperties(),
       this.getCompactMode(),
+      this.getLogDestination(),
       this.getShowEquation(),
       this.getShowRecipients(),
       this.getShowSender()
@@ -88,6 +89,18 @@ export class ChangeLog {
    */
   async getCompactMode() {
     this.compactMode = await Utils.getSetting("compactMode");
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Load logDestination setting.
+   * @returns {Promise<void>}
+   */
+  async getLogDestination() {
+    this.logDestination = await Utils.getSetting("logDestination");
+    this.journalEntries = new Map();
+    this.journalPages = new Map();
   }
 
   /* -------------------------------------------- */
@@ -541,6 +554,102 @@ export class ChangeLog {
   /* -------------------------------------------- */
 
   /**
+   * Build an HTML snippet from a group of changes for journal logging.
+   * @param {object} group
+   * @returns {string}
+   */
+  #buildJournalHtml(group) {
+    const { document1Name, modifiedByName, changes } = group;
+    const time = new Date().toLocaleTimeString("en-GB");
+    const sanitize = str => String(str ?? "").replace(/<i ([^>]*)><\/i>/g, "<span $1>\u200b</span>").replace(/<(?!\/?span\b)[^>]*>/g, "");
+    const arrow = '<span class="fa fa-arrow-right">\u200b</span>';
+
+    let html = `<p><strong>${time}</strong> ${document1Name} <em>(modified by ${modifiedByName})</em></p>\n<ul>\n`;
+    for ( const change of changes ) {
+      const prefix = change.document2Name ? `${change.document2Name} · ` : "";
+      const name = sanitize(change.propertyName);
+      if ( change.oldValue !== null ) {
+        html += `<li>${prefix}${name}: ${sanitize(change.oldValue)} ${arrow} ${sanitize(change.newValue)}</li>\n`;
+      } else {
+        html += `<li>${prefix}${name}: ${sanitize(change.newValue)}</li>\n`;
+      }
+    }
+    html += "</ul>\n";
+    return html;
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Log a group of changes to the appropriate journal entries based on audience.
+   * If the current user is not a GM, emit via socket for the GM to handle.
+   * @param {object} group
+   * @returns {Promise<void>}
+   */
+  async #logToJournal(group) {
+    const html = this.#buildJournalHtml(group);
+    const { isEveryone, isGm, isPlayer, owners } = group;
+
+    const targets = [];
+    if ( isEveryone ) targets.push({ journalName: "Change Log", ownership: { default: 3 } });
+    if ( isGm ) targets.push({ journalName: "Change Log (GM)", ownership: { default: 0 } });
+    if ( isPlayer ) {
+      for ( const ownerId of owners ) {
+        const playerName = game.users.get(ownerId)?.name;
+        if ( playerName ) targets.push({ journalName: `Change Log (${playerName})`, ownership: { default: 0, [ownerId]: 3 } });
+      }
+    }
+
+    for ( const { journalName, ownership } of targets ) {
+      if ( game.user.isGM ) {
+        await ChangeLog.writeToJournal(journalName, html, ownership);
+      } else {
+        game.socket.emit("module.change-log", { action: "logToJournal", journalName, html, ownership });
+      }
+    }
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Write an HTML snippet to a named journal entry.
+   * Finds or creates the journal and today's page, then appends the HTML.
+   * @param {string} journalName The journal name.
+   * @param {string} html The HTML to append.
+   * @param {object} [ownership] Ownership data used when creating a new journal entry.
+   * @returns {Promise<void>}
+   */
+  static async writeToJournal(journalName, html, ownership = {}) {
+    const changeLog = game.changeLog;
+
+    // Find or create the journal entry
+    let journalEntry = changeLog.journalEntries.get(journalName);
+    if ( !journalEntry ) {
+      journalEntry = game.journal.getName(journalName)
+        ?? await JournalEntry.create({ name: journalName, ownership });
+      changeLog.journalEntries.set(journalName, journalEntry);
+    }
+
+    // Find or create today's page
+    const today = new Date().toLocaleDateString("en-CA");
+    const pageKey = `${journalName}|${today}`;
+    let page = changeLog.journalPages.get(pageKey);
+    if ( !page ) {
+      page = journalEntry.pages.find(p => p.name === today)
+        ?? await journalEntry.createEmbeddedDocuments("JournalEntryPage", [
+          { name: today, type: "text", text: { content: "" } }
+        ]).then(pages => pages[0]);
+      changeLog.journalPages.set(pageKey, page);
+    }
+
+    // Append to existing page content
+    const existing = page.text.content ?? "";
+    await page.update({ "text.content": existing + html });
+  }
+
+  /* -------------------------------------------- */
+
+  /**
    * Determine if a change is valid for logging.
    * @param {{oldValue: *, newValue: *}} value
    * @returns {boolean}
@@ -600,6 +709,10 @@ export class ChangeLog {
         document1Name,
         modifiedByName,
         whisper,
+        isEveryone,
+        isGm,
+        isPlayer,
+        owners,
         changes: []
       });
     }
@@ -631,61 +744,69 @@ export class ChangeLog {
   /* -------------------------------------------- */
 
   /**
-   * Flush the message buffer, creating grouped ChatMessages.
+   * Flush the message buffer, creating grouped ChatMessages and/or journal entries.
    * @returns {Promise<void>}
    */
   async #flushBuffer() {
     this.flushTimer = null;
     const buffer = new Map(this.messageBuffer);
     this.messageBuffer.clear();
+    const logToChat = this.logDestination === "chat" || this.logDestination === "both";
+    const logToJournal = this.logDestination === "journal" || this.logDestination === "both";
 
     for ( const [, group] of buffer ) {
       const { document1Name, modifiedByName, whisper, changes } = group;
 
-      const templateChanges = changes.map(change => ({
-        document2Name: change.document2Name,
-        propertyName: change.propertyName,
-        oldValue: change.oldValue,
-        newValue: change.newValue,
-        sign: change.sign,
-        adjustmentValue: change.adjustmentValue
-      }));
+      if ( logToChat ) {
+        const templateChanges = changes.map(change => ({
+          document2Name: change.document2Name,
+          propertyName: change.propertyName,
+          oldValue: change.oldValue,
+          newValue: change.newValue,
+          sign: change.sign,
+          adjustmentValue: change.adjustmentValue
+        }));
 
-      const content = await foundry.applications.handlebars.renderTemplate(
-        TEMPLATE.CHAT_CARD,
-        {
-          document1Name,
-          tooltip: `<div>${game.i18n.localize("changeLog.modifiedBy")}: ${modifiedByName}</div>`,
-          compactMode: this.compactMode,
-          changes: templateChanges
-        }
-      );
+        const content = await foundry.applications.handlebars.renderTemplate(
+          TEMPLATE.CHAT_CARD,
+          {
+            document1Name,
+            tooltip: `<div>${game.i18n.localize("changeLog.modifiedBy")}: ${modifiedByName}</div>`,
+            compactMode: this.compactMode,
+            changes: templateChanges
+          }
+        );
 
-      const flagChanges = changes.map(change => {
-        const flagChange = {
-          actorId: change.actorId,
-          tokenId: change.tokenId,
-          id: change.id,
-          key: change.key,
-          type: change.type,
-          val: change.val
+        const flagChanges = changes.map(change => {
+          const flagChange = {
+            actorId: change.actorId,
+            tokenId: change.tokenId,
+            id: change.id,
+            key: change.key,
+            type: change.type,
+            val: change.val
+          };
+          if ( change.entityData ) flagChange.entityData = change.entityData;
+          return flagChange;
+        });
+
+        const flags = {
+          "change-log": {
+            changes: flagChanges
+          },
+          "chat-tabs": {
+            module: "change-log"
+          }
         };
-        if ( change.entityData ) flagChange.entityData = change.entityData;
-        return flagChange;
-      });
 
-      const flags = {
-        "change-log": {
-          changes: flagChanges
-        },
-        "chat-tabs": {
-          module: "change-log"
-        }
-      };
+        const speaker = { alias: "Change Log" };
 
-      const speaker = { alias: "Change Log" };
+        await ChatMessage.create({ content, speaker, whisper, flags });
+      }
 
-      await ChatMessage.create({ content, speaker, whisper, flags });
+      if ( logToJournal ) {
+        await this.#logToJournal(group);
+      }
     }
   }
 }

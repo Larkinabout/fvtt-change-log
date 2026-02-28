@@ -33,6 +33,13 @@ Hooks.on("ready", () => {
     }
     return original(message, options);
   };
+
+  game.socket.on(`module.${MODULE.ID}`, async data => {
+    if ( !game.user.isGM ) return;
+    if ( data.action === "logToJournal" ) {
+      await ChangeLog.writeToJournal(data.journalName, data.html, data.ownership);
+    }
+  });
 });
 
 /* -------------------------------------------- */
@@ -66,12 +73,10 @@ Hooks.on("getChatMessageContextOptions", async (html, menuItems) => {
       const changeLogFlags = message.flags?.["change-log"];
       if ( !changeLogFlags ) return false;
 
-      // New format: check if any change has val or entityData
       if ( changeLogFlags.changes ) {
         return changeLogFlags.changes.some(c => (c.val !== null && c.val !== undefined) || c.entityData);
       }
 
-      // Legacy format
       return (changeLogFlags.val !== null && changeLogFlags.val !== undefined) || !!changeLogFlags.entityData;
     },
     callback: li => {
@@ -260,7 +265,6 @@ async function undo(chatMessageId) {
 
   const changeLogFlags = chatMessage.flags["change-log"];
 
-  // New format: array of changes
   if ( changeLogFlags.changes ) {
     const changes = [...changeLogFlags.changes].reverse();
     for ( const change of changes ) {
@@ -269,7 +273,6 @@ async function undo(chatMessageId) {
     return;
   }
 
-  // Legacy format: single change
   await undoSingleChange(changeLogFlags);
 }
 
@@ -284,7 +287,7 @@ async function undo(chatMessageId) {
  * @param {string} changeData.key The property key.
  * @param {string} changeData.type The document type.
  * @param {*} changeData.val The original value.
- * @param {object} changeData.entityData The entity data for item recreation.
+ * @param {object} changeData.entityData The entity data.
  * @returns {Promise<void>}
  */
 async function undoSingleChange({ tokenId, actorId, id, key, type, val, entityData }) {

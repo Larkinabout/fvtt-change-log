@@ -62,6 +62,23 @@ export const registerSettings = function() {
 
   /* -------------------------------------------- */
 
+  game.settings.register(MODULE.ID, "logDestination", {
+    name: game.i18n.localize("changeLog.settings.logDestination.name"),
+    hint: game.i18n.localize("changeLog.settings.logDestination.hint"),
+    scope: "world",
+    config: true,
+    type: String,
+    default: "chat",
+    choices: {
+      chat: game.i18n.localize("changeLog.settings.logDestination.chat"),
+      journal: game.i18n.localize("changeLog.settings.logDestination.journal"),
+      both: game.i18n.localize("changeLog.settings.logDestination.both")
+    },
+    onChange: () => { game.changeLog.getLogDestination(); }
+  });
+
+  /* -------------------------------------------- */
+
   game.settings.register(MODULE.ID, "compactMode", {
     name: game.i18n.localize("changeLog.settings.compactMode.name"),
     hint: game.i18n.localize("changeLog.settings.compactMode.hint"),

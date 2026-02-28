@@ -4,9 +4,10 @@
     "description": "",
     "version": "This is auto replaced",
     "library": "false",
+    "socket": true,
     "compatibility": {
         "minimum": 13.341,
-        "verified": 13.445
+        "verified": 13.351
     },
     "authors": [
         {
