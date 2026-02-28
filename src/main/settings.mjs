@@ -62,6 +62,18 @@ export const registerSettings = function() {
 
   /* -------------------------------------------- */
 
+  game.settings.register(MODULE.ID, "compactMode", {
+    name: game.i18n.localize("changeLog.settings.compactMode.name"),
+    hint: game.i18n.localize("changeLog.settings.compactMode.hint"),
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: false,
+    onChange: () => { game.changeLog.getCompactMode(); }
+  });
+
+  /* -------------------------------------------- */
+
   game.settings.register(MODULE.ID, "showEquation", {
     name: game.i18n.localize("changeLog.settings.showEquation.name"),
     hint: game.i18n.localize("changeLog.settings.showEquation.hint"),

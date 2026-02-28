@@ -1,6 +1,12 @@
 <div class="change-log-card-content" data-tooltip="{{tooltip}}">
     {{#if document1Name}}<span class="change-log-card-document1">{{document1Name}}</span>{{/if}}
     {{#each changes}}
+    {{#if ../compactMode}}
+    <div class="change-log-card-compact">
+        {{#if document2Name}}<span class="change-log-card-document2">{{document2Name}} &middot; </span>{{/if}}<span class="change-log-card-property">{{propertyName}}:</span>
+        <span class="change-log-card-compact-values">{{#if oldValue includeZero=true}}<span>{{{oldValue}}}</span> <i class="fa fa-arrow-right"></i> {{/if}}{{#if adjustmentValue includeZero=true}}<span>{{{adjustmentValue}}}</span> <i class="fa fa-arrow-right"></i> {{/if}}{{#if newValue includeZero=true}}<span>{{{newValue}}}</span>{{/if}}</span>
+    </div>
+    {{else}}
     <div class="change-log-card-change">
         {{#if document2Name}}<span class="change-log-card-document2">{{document2Name}} &middot; </span>{{/if}}<span class="change-log-card-property">{{propertyName}}</span>
         <div class="change-log-card-values">
@@ -15,5 +21,6 @@
             {{#if newValue includeZero=true}}<div class="change-log-card-new-value">{{{newValue}}}</div>{{/if}}
         </div>
     </div>
+    {{/if}}
     {{/each}}
 </div>

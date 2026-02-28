@@ -16,13 +16,14 @@ export class ChangeLog {
    * @returns {Promise<void>}
    */
   async init() {
-    Promise.all([
+    await Promise.all([
       foundry.applications.handlebars.loadTemplates([TEMPLATE.CHAT_CARD, TEMPLATE.TAG_FORM]),
       this.getEveryoneActorTypes(),
       this.getEveryoneProperties(),
       this.getGmActorTypes(),
       this.getGmProperties(),
       this.getPlayerProperties(),
+      this.getCompactMode(),
       this.getShowEquation(),
       this.getShowRecipients(),
       this.getShowSender()
@@ -36,7 +37,7 @@ export class ChangeLog {
    * @returns {Promise<void>}
    */
   async getEveryoneActorTypes() {
-    this.everyoneActorTypes = await Utils.getSetting("everyoneActorTypes")?.split(DELIMITER) ?? [];
+    this.everyoneActorTypes = new Set(await Utils.getSetting("everyoneActorTypes")?.split(DELIMITER) ?? []);
   }
 
   /* -------------------------------------------- */
@@ -46,7 +47,7 @@ export class ChangeLog {
    * @returns {Promise<void>}
    */
   async getEveryoneProperties() {
-    this.everyoneProperties = await Utils.getSetting("everyoneProperties")?.split(DELIMITER) ?? [];
+    this.everyoneProperties = new Set(await Utils.getSetting("everyoneProperties")?.split(DELIMITER) ?? []);
   }
 
   /* -------------------------------------------- */
@@ -56,7 +57,7 @@ export class ChangeLog {
    * @returns {Promise<void>}
    */
   async getGmActorTypes() {
-    this.gmActorTypes = await Utils.getSetting("gmActorTypes")?.split(DELIMITER) ?? [];
+    this.gmActorTypes = new Set(await Utils.getSetting("gmActorTypes")?.split(DELIMITER) ?? []);
   }
 
   /* -------------------------------------------- */
@@ -66,7 +67,7 @@ export class ChangeLog {
    * @returns {Promise<void>}
    */
   async getGmProperties() {
-    this.gmProperties = await Utils.getSetting("gmProperties")?.split(DELIMITER) ?? [];
+    this.gmProperties = new Set(await Utils.getSetting("gmProperties")?.split(DELIMITER) ?? []);
   }
 
   /* -------------------------------------------- */
@@ -76,7 +77,17 @@ export class ChangeLog {
    * @returns {Promise<void>}
    */
   async getPlayerProperties() {
-    this.playerProperties = await Utils.getSetting("playerProperties")?.split(DELIMITER) ?? [];
+    this.playerProperties = new Set(await Utils.getSetting("playerProperties")?.split(DELIMITER) ?? []);
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Load compactMode setting.
+   * @returns {Promise<void>}
+   */
+  async getCompactMode() {
+    this.compactMode = await Utils.getSetting("compactMode");
   }
 
   /* -------------------------------------------- */
@@ -270,9 +281,11 @@ export class ChangeLog {
     const token = (documentType === "token") ? doc : (actor?.token || null);
 
     const derivedProperties = DERIVED_PROPERTIES.map(derivedProperty => {
-      const obj = (derivedProperty.split(".")[0] === "actor") ? actor : doc;
-      const oldValue = Utils.getValueByDotNotation(obj, Utils.getPropertyKey(derivedProperty));
-      return { property: derivedProperty, oldValue };
+      const docType = Utils.getPropertyDocumentType(derivedProperty);
+      const key = Utils.getPropertyKey(derivedProperty);
+      const obj = (docType === "actor") ? actor : doc;
+      const oldValue = Utils.getValueByDotNotation(obj, key);
+      return { property: derivedProperty, docType, key, oldValue };
     });
 
     if ( derivedProperties.length ) {
@@ -351,10 +364,7 @@ export class ChangeLog {
     const modifiedByName = game.users.get(userId)?.name;
 
     for (const derivedProperty of derivedProperties) {
-      const { property, oldValue } = derivedProperty;
-
-      const key = Utils.getPropertyKey(property);
-      const propertyDocumentType = Utils.getPropertyDocumentType(property);
+      const { docType: propertyDocumentType, key, oldValue } = derivedProperty;
       const obj = (propertyDocumentType === "actor") ? actor : doc;
       const newValue = Utils.getValueByDotNotation(obj, key);
 
@@ -497,10 +507,11 @@ export class ChangeLog {
    * @returns {{isEveryone: boolean, isGm: boolean, isPlayer: boolean}}
    */
   #getAudience(documentType, actorType, key) {
+    const property = `${documentType}.${key}`;
     return {
-      isEveryone: (this.everyoneActorTypes.includes(actorType) && this.everyoneProperties.includes(`${documentType}.${key}`)),
-      isGm: (this.gmActorTypes.includes(actorType) && this.gmProperties.includes(`${documentType}.${key}`)),
-      isPlayer: this.playerProperties.includes(`${documentType}.${key}`)
+      isEveryone: (this.everyoneActorTypes.has(actorType) && this.everyoneProperties.has(property)),
+      isGm: (this.gmActorTypes.has(actorType) && this.gmProperties.has(property)),
+      isPlayer: this.playerProperties.has(property)
     };
   }
 
@@ -548,9 +559,7 @@ export class ChangeLog {
    * @returns {Array}
    */
   #uniqueArray(a) {
-    return a.filter(function(item, pos) {
-      return a.indexOf(item) === pos;
-    });
+    return [...new Set(a)];
   }
 
   /* -------------------------------------------- */
@@ -595,11 +604,14 @@ export class ChangeLog {
       });
     }
 
+    const eventKeys = ["itemCreated", "itemDeleted", "deleted", "inCombat"];
+    const isEvent = eventKeys.includes(key);
+
     const group = this.messageBuffer.get(bufferKey);
     group.changes.push({
       document2Name,
       propertyName: Utils.getPropertyName(`${documentType}.${key}`),
-      oldValue: Utils.getPropertyValue(oldValue),
+      oldValue: isEvent ? null : Utils.getPropertyValue(oldValue),
       newValue: Utils.getPropertyValue(newValue),
       sign: sign || "fa-arrow-right",
       adjustmentValue,
@@ -644,6 +656,7 @@ export class ChangeLog {
         {
           document1Name,
           tooltip: `<div>${game.i18n.localize("changeLog.modifiedBy")}: ${modifiedByName}</div>`,
+          compactMode: this.compactMode,
           changes: templateChanges
         }
       );

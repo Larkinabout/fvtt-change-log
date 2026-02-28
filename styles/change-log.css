@@ -2,6 +2,10 @@
     --font-system-primary: var(--font-primary);
 }
 
+/*
+ * CHAT CARD - SHARED
+ */
+
 .change-log-card-content {
     font-size: var(--font-size-12);
     gap: 0.05rem;
@@ -15,6 +19,32 @@
     font-family: var(--font-system-primary);
     font-weight: bold;
 }
+
+/*
+ * CHAT CARD - COMPACT MODE
+ */
+
+.change-log-card-compact {
+    font-size: var(--font-size-12);
+    margin-top: 0.15rem;
+}
+
+.change-log-card-compact + .change-log-card-compact {
+    padding-top: 0.15rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.change-log-card-compact .change-log-card-property {
+    font-style: italic;
+}
+
+.change-log-card-compact-values i {
+    padding: 0 0.25rem;
+}
+
+/*
+ * CHAT CARD - STANDARD MODE
+ */
 
 .change-log-card-change + .change-log-card-change {
     margin-top: 0.15rem;
@@ -69,6 +99,10 @@
     justify-content: center;
 }
 
+/*
+ * TAGIFY APP - LAYOUT
+ */
+
 .change-log-tagify-app-label {
     margin-top: 0.2rem;
 }
@@ -85,10 +119,6 @@
     gap: 0.2rem;
 }
 
-/*
- * TAGIFY
- */
-
 .change-log-tagify-app .standard-form {
     height: 100%;
 }
@@ -98,6 +128,10 @@
     margin: 0 0 0.5rem 0;
     padding: 0.5rem 0;
 }
+
+/*
+ * TAGIFY APP - TAG INPUT
+ */
 
 .tagify.change-log-tagify {
     --tag-bg: none;
@@ -130,7 +164,6 @@
     font-size: var(--font-size-12);
     border-radius: 4px;
 }
-
 
 .change-log-tagify .tagify__tag:hover {
     cursor: grab;
@@ -172,6 +205,10 @@
 .change-log-tagify .tagify__tag__removeBtn:hover::after{
     text-shadow: 0 0 2px var(--color-shadow-primary);
 }
+
+/*
+ * TAGIFY APP - DROPDOWN
+ */
 
 .change-log-tags-dropdown .tagify__dropdown__wrapper {
     align-content: start;

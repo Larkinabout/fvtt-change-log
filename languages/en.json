@@ -3,6 +3,8 @@
     "changeLog.empty": "–",
     "changeLog.modifiedBy": "Modified By",
     "changeLog.saveAndClose": "Save and Close",
+    "changeLog.settings.compactMode.name": "Compact Mode",
+    "changeLog.settings.compactMode.hint": "Display changes as single-line text instead of styled boxes",
     "changeLog.settings.everyoneActorTypesForm.name": "Actor Types for Everyone",
     "changeLog.settings.everyoneActorTypesForm.label": "Actor Types for Everyone",
     "changeLog.settings.everyoneActorTypesForm.hint": "Actor types to log for everyone",
