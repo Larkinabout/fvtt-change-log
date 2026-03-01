@@ -1,4 +1,5 @@
 import { MODULE } from "./constants.mjs";
+import { ImportExportSettingsApp } from "../applications/import-export-settings-app.mjs";
 import { EveryoneActorTypesTagifyApp, EveryonePropertiesTagifyApp, GmActorTypesTagifyApp, GmPropertiesTagifyApp, PlayerPropertiesTagifyApp } from "../applications/tagify-app.mjs";
 
 export const registerSettings = function() {
@@ -56,6 +57,18 @@ export const registerSettings = function() {
     hint: game.i18n.localize("changeLog.settings.playerPropertiesForm.hint"),
     icon: "fas fa-ballot-check",
     type: PlayerPropertiesTagifyApp,
+    restricted: true,
+    scope: "world"
+  });
+
+  /* -------------------------------------------- */
+
+  game.settings.registerMenu(MODULE.ID, "importExportForm", {
+    name: game.i18n.localize("changeLog.settings.importExportForm.name"),
+    label: game.i18n.localize("changeLog.settings.importExportForm.label"),
+    hint: game.i18n.localize("changeLog.settings.importExportForm.hint"),
+    icon: "fas fa-file-arrow-up",
+    type: ImportExportSettingsApp,
     restricted: true,
     scope: "world"
   });

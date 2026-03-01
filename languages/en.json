@@ -1,6 +1,15 @@
 {
     "changeLog.chatTabs.hint": "Messages sent by the Change Log module.",
     "changeLog.empty": "–",
+    "changeLog.importExportSettings.title": "Import/Export Settings",
+    "changeLog.importExportSettings.export": "Export",
+    "changeLog.importExportSettings.exportHint": "Export all module settings to a file",
+    "changeLog.importExportSettings.import": "Import",
+    "changeLog.importExportSettings.importHint": "Import module settings from a file",
+    "changeLog.importExportSettings.importComplete": "Settings imported successfully",
+    "changeLog.importExportSettings.importDialog.hint": "Select a Change Log settings file to import.",
+    "changeLog.importExportSettings.importDialog.warning": "Warning: This will overwrite your current settings.",
+    "changeLog.importExportSettings.importDialog.noFile": "No file selected",
     "changeLog.modifiedBy": "Modified By",
     "changeLog.saveAndClose": "Save and Close",
     "changeLog.settings.compactMode.name": "Compact Mode",
@@ -22,6 +31,9 @@
     "changeLog.settings.gmPropertiesForm.name": "Changes for GM",
     "changeLog.settings.gmPropertiesForm.label": "Changes for GM",
     "changeLog.settings.gmPropertiesForm.hint": "Changes to log for the GM",
+    "changeLog.settings.importExportForm.name": "Import/Export Settings",
+    "changeLog.settings.importExportForm.label": "Import/Export",
+    "changeLog.settings.importExportForm.hint": "Import or export module settings",
     "changeLog.settings.playerPropertiesForm.name": "Changes for Player",
     "changeLog.settings.playerPropertiesForm.label": "Changes for Player",
     "changeLog.settings.playerPropertiesForm.hint": "Changes to log for the player",
@@ -52,5 +64,6 @@
     "changeLog.tagifyApp.playerProperties.title": "Changes for Player",
     "changeLog.tagifyApp.playerProperties.label.available": "Available Properties",
     "changeLog.tagifyApp.playerProperties.label.selected": "Selected Properties",
+    "changeLog.cancel": "Cancel",
     "changeLog.undo": "Undo Changes"
 }

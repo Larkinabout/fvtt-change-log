@@ -11,6 +11,8 @@ const TEMPLATE_DIR = `modules/${MODULE.ID}/templates`;
 
 export const TEMPLATE = {
   CHAT_CARD: `${TEMPLATE_DIR}/chat-card.hbs`,
+  IMPORT_DIALOG: `${TEMPLATE_DIR}/import-dialog.hbs`,
+  SETTINGS_EXPORT: `${TEMPLATE_DIR}/import-export-settings.hbs`,
   TAG_FORM: `${TEMPLATE_DIR}/tagify-app.hbs`
 };
 
