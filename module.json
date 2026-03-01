@@ -35,6 +35,11 @@
         {
             "lang": "en",
             "name": "English",
+            "path": "languages/CoC7/en.json"
+        },
+        {
+            "lang": "en",
+            "name": "English",
             "path": "languages/cyphersystem/en.json"
         },
         {

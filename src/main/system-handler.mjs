@@ -1,4 +1,5 @@
 import { ACTOR_TYPES as ARCHMAGE_ACTOR_TYPES, DERIVED_PROPERTIES as ARCHMAGE_DERIVED_PROPERTIES, PROPERTIES as ARCHMAGE_PROPERTIES } from "../properties/archmage/properties.mjs";
+import { ACTOR_TYPES as COC7_ACTOR_TYPES, DERIVED_PROPERTIES as COC7_DERIVED_PROPERTIES, PROPERTIES as COC7_PROPERTIES } from "../properties/CoC7/properties.mjs";
 import { ACTOR_TYPES as CYPHERSYSTEM_ACTOR_TYPES, DERIVED_PROPERTIES as CYPHERSYSTEM_DERIVED_PROPERTIES, PROPERTIES as CYPHERSYSTEM_PROPERTIES } from "../properties/cyphersystem/properties.mjs";
 import { ACTOR_TYPES as DND5E_ACTOR_TYPES, DERIVED_PROPERTIES as DND5E_DERIVED_PROPERTIES, PROPERTIES as DND5E_PROPERTIES } from "../properties/dnd5e/properties.mjs";
 import { ACTOR_TYPES as OSE_ACTOR_TYPES, DERIVED_PROPERTIES as OSE_DERIVED_PROPERTIES, PROPERTIES as OSE_PROPERTIES } from "../properties/ose/properties.mjs";
@@ -24,6 +25,8 @@ Hooks.on("init", () => {
     switch (game.system.id) {
       case "archmage":
         return ARCHMAGE_ACTOR_TYPES;
+      case "CoC7":
+        return COC7_ACTOR_TYPES;
       case "cyphersystem":
         return CYPHERSYSTEM_ACTOR_TYPES;
       case "dnd5e":
@@ -47,6 +50,8 @@ Hooks.on("init", () => {
     switch (game.system.id) {
       case "archmage":
         return ARCHMAGE_DERIVED_PROPERTIES;
+      case "CoC7":
+        return COC7_DERIVED_PROPERTIES;
       case "cyphersystem":
         return CYPHERSYSTEM_DERIVED_PROPERTIES;
       case "dnd5e":
@@ -70,6 +75,8 @@ Hooks.on("init", () => {
     switch (game.system.id) {
       case "archmage":
         return ARCHMAGE_PROPERTIES;
+      case "CoC7":
+        return COC7_PROPERTIES;
       case "cyphersystem":
         return CYPHERSYSTEM_PROPERTIES;
       case "dnd5e":
@@ -92,6 +99,7 @@ Hooks.on("init", () => {
   function setFonts() {
     const fonts = {
       archmage: '"mason-serif","Nodesto","Signika","Palatino Linotype",serif',
+      CoC7: null,
       cyphersystem: '"mason-serif","Nodesto","Signika","Palatino Linotype",serif',
       dnd5e: "var(--dnd5e-font-roboto-slab)",
       ose: null,
