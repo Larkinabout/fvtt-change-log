@@ -55,6 +55,11 @@
         {
             "lang": "en",
             "name": "English",
+            "path": "languages/pf1/en.json"
+        },
+        {
+            "lang": "en",
+            "name": "English",
             "path": "languages/pf2e/en.json"
         },
         {
