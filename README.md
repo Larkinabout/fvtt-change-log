@@ -36,6 +36,7 @@ Change Log is intended to be system-agnostic, however only the systems listed ar
 - [Cypher System](https://foundryvtt.com/packages/cyphersystem)
 - [D&D 5e](https://foundryvtt.com/packages/dnd5e)
 - [Old-School Essentials (OSE)](https://foundryvtt.com/packages/ose)
+- [Pathfinder 1](https://foundryvtt.com/packages/pf1)
 - [Pathfinder Second Edition](https://foundryvtt.com/packages/pf2e)
 - [Savage Worlds Adventure Edition](https://foundryvtt.com/packages/swade/)
 
