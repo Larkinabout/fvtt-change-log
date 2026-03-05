@@ -5,6 +5,7 @@
 A Foundry VTT module to log changes to the chat log.
 
 ![Change Log Chat Log](./.github/readme/change-log-chat-log.png)
+![Change Log Journal](./.github/readme/change-log-journal.png)
 ![Change Log Changes for GM Form](./.github/readme/change-log-changes-for-gm-form.png)
 
 # Features
@@ -31,9 +32,11 @@ A Foundry VTT module to log changes to the chat log.
 Change Log is intended to be system-agnostic, however only the systems listed are currently supported with pre-populated lists and friendly property names:
 
 - [Archmage / 13th Age](https://foundryvtt.com/packages/archmage)
+- [Call of Cthulhu 7th Edition](https://foundryvtt.com/packages/CoC7)
 - [Cypher System](https://foundryvtt.com/packages/cyphersystem)
 - [D&D 5e](https://foundryvtt.com/packages/dnd5e)
 - [Old-School Essentials (OSE)](https://foundryvtt.com/packages/ose)
+- [Pathfinder Second Edition](https://foundryvtt.com/packages/pf2e)
 - [Savage Worlds Adventure Edition](https://foundryvtt.com/packages/swade/)
 
 If you would like your system to be supported or a property is not listed for a supported system, please raise a feature request or, better yet, create a pull request.
