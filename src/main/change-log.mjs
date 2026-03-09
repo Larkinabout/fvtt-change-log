@@ -27,7 +27,9 @@ export class ChangeLog {
       this.getLogDestination(),
       this.getShowEquation(),
       this.getShowRecipients(),
-      this.getShowSender()
+      this.getShowSender(),
+      this.getChatTabVisibility(),
+      this.getChatTabRoles()
     ]);
   }
 
@@ -131,6 +133,48 @@ export class ChangeLog {
    */
   async getShowSender() {
     this.showSender = await Utils.getSetting("showSender");
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Load chatTabVisibility setting.
+   * @returns {Promise<void>}
+   */
+  async getChatTabVisibility() {
+    if ( !game.modules.get("custom-chat-tabs")?.active ) {
+      this.chatTabVisibility = "none";
+      return;
+    }
+    this.chatTabVisibility = await Utils.getSetting("chatTabVisibility");
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Load chatTabRoles setting and map to role numbers.
+   * @returns {Promise<void>}
+   */
+  async getChatTabRoles() {
+    if ( !game.modules.get("custom-chat-tabs")?.active ) {
+      this.chatTabRoles = undefined;
+      return;
+    }
+    const ROLES = CONST.USER_ROLES;
+    const setting = await Utils.getSetting("chatTabRoles");
+    switch ( setting ) {
+      case "gm":
+        this.chatTabRoles = [ROLES.GAMEMASTER];
+        break;
+      case "trustedAndAbove":
+        this.chatTabRoles = [ROLES.TRUSTED, ROLES.ASSISTANT, ROLES.GAMEMASTER];
+        break;
+      case "assistantAndAbove":
+        this.chatTabRoles = [ROLES.ASSISTANT, ROLES.GAMEMASTER];
+        break;
+      default:
+        this.chatTabRoles = undefined;
+    }
   }
 
   /* -------------------------------------------- */
@@ -793,11 +837,14 @@ export class ChangeLog {
         const flags = {
           "change-log": {
             changes: flagChanges
-          },
-          "chat-tabs": {
-            module: "change-log"
           }
         };
+
+        if ( this.chatTabVisibility !== "none" ) {
+          const customChatTabsFlag = { module: "change-log" };
+          if ( this.chatTabVisibility === "exclusive" ) customChatTabsFlag.exclusive = true;
+          flags["custom-chat-tabs"] = customChatTabsFlag;
+        }
 
         const speaker = { alias: "Change Log" };
 

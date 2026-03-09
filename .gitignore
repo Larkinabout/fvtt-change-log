@@ -3,3 +3,4 @@ dist/
 node_modules/*
 index.js
 index.js.map
+symlink.bat

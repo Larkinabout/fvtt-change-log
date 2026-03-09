@@ -92,6 +92,43 @@ export const registerSettings = function() {
 
   /* -------------------------------------------- */
 
+  if ( game.modules.get("custom-chat-tabs")?.active ) {
+    game.settings.register(MODULE.ID, "chatTabVisibility", {
+      name: game.i18n.localize("changeLog.settings.chatTabVisibility.name"),
+      hint: game.i18n.localize("changeLog.settings.chatTabVisibility.hint"),
+      scope: "world",
+      config: true,
+      type: String,
+      default: "both",
+      choices: {
+        none: game.i18n.localize("changeLog.settings.chatTabVisibility.none"),
+        both: game.i18n.localize("changeLog.settings.chatTabVisibility.both"),
+        exclusive: game.i18n.localize("changeLog.settings.chatTabVisibility.exclusive")
+      },
+      onChange: () => { game.changeLog.getChatTabVisibility(); }
+    });
+
+    /* -------------------------------------------- */
+
+    game.settings.register(MODULE.ID, "chatTabRoles", {
+      name: game.i18n.localize("changeLog.settings.chatTabRoles.name"),
+      hint: game.i18n.localize("changeLog.settings.chatTabRoles.hint"),
+      scope: "world",
+      config: true,
+      type: String,
+      default: "all",
+      choices: {
+        all: game.i18n.localize("changeLog.settings.chatTabRoles.all"),
+        gm: game.i18n.localize("changeLog.settings.chatTabRoles.gm"),
+        trustedAndAbove: game.i18n.localize("changeLog.settings.chatTabRoles.trustedAndAbove"),
+        assistantAndAbove: game.i18n.localize("changeLog.settings.chatTabRoles.assistantAndAbove")
+      },
+      onChange: () => { game.changeLog.getChatTabRoles(); }
+    });
+  }
+
+  /* -------------------------------------------- */
+
   game.settings.register(MODULE.ID, "compactMode", {
     name: game.i18n.localize("changeLog.settings.compactMode.name"),
     hint: game.i18n.localize("changeLog.settings.compactMode.hint"),

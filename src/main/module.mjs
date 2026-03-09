@@ -45,15 +45,22 @@ Hooks.on("ready", () => {
 /* -------------------------------------------- */
 
 /**
- * Register the Change Log tab in chat-tabs.
+ * Register the Change Log tab with Custom Chat Tabs.
  */
-Hooks.on("chat-tabs.init", () => {
-  const data = {
+Hooks.on("custom-chat-tabs.init", () => {
+  if ( Utils.getSetting("chatTabVisibility") === "none" ) return;
+
+  const api = game.modules.get("custom-chat-tabs")?.api;
+  if ( !api ) return;
+
+  api.register({
     key: "change-log",
     label: "Change Log",
-    hint: game.i18n.localize("changeLog.chatTabs.hint")
-  };
-  game.chatTabs.register(data);
+    icon: "fas fa-notebook",
+    exclusive: Utils.getSetting("chatTabVisibility") === "exclusive",
+    filter: message => !!message.flags?.["change-log"],
+    ...(game.changeLog.chatTabRoles !== undefined && { roles: game.changeLog.chatTabRoles })
+  });
 });
 
 /* -------------------------------------------- */
