@@ -7,7 +7,17 @@
     "socket": true,
     "compatibility": {
         "minimum": 13.341,
-        "verified": 13.351
+        "verified": 14.360,
+        "maximum": 14.999
+    },
+    "relationships": {
+        "recommends": [
+            {
+                "id": "custom-chat-tabs",
+                "type": "module",
+                "reason": "Adds a dedicated Change Log chat tab so change messages can be filtered or displayed exclusively in their own tab."
+            }
+        ]
     },
     "authors": [
         {

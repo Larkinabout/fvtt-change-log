@@ -1,7 +1,7 @@
 import { ACTOR_TYPES as ARCHMAGE_ACTOR_TYPES, DERIVED_PROPERTIES as ARCHMAGE_DERIVED_PROPERTIES, PROPERTIES as ARCHMAGE_PROPERTIES } from "../properties/archmage/properties.mjs";
 import { ACTOR_TYPES as COC7_ACTOR_TYPES, DERIVED_PROPERTIES as COC7_DERIVED_PROPERTIES, PROPERTIES as COC7_PROPERTIES } from "../properties/CoC7/properties.mjs";
 import { ACTOR_TYPES as CYPHERSYSTEM_ACTOR_TYPES, DERIVED_PROPERTIES as CYPHERSYSTEM_DERIVED_PROPERTIES, PROPERTIES as CYPHERSYSTEM_PROPERTIES } from "../properties/cyphersystem/properties.mjs";
-import { ACTOR_TYPES as DND5E_ACTOR_TYPES, DERIVED_PROPERTIES as DND5E_DERIVED_PROPERTIES, PROPERTIES as DND5E_PROPERTIES } from "../properties/dnd5e/properties.mjs";
+import { resolveActorTypes as resolveDnd5eActorTypes, resolveDerivedProperties as resolveDnd5eDerivedProperties, resolveProperties as resolveDnd5eProperties } from "../properties/dnd5e/properties.mjs";
 import { ACTOR_TYPES as OSE_ACTOR_TYPES, DERIVED_PROPERTIES as OSE_DERIVED_PROPERTIES, PROPERTIES as OSE_PROPERTIES } from "../properties/ose/properties.mjs";
 import { ACTOR_TYPES as PF1_ACTOR_TYPES, DERIVED_PROPERTIES as PF1_DERIVED_PROPERTIES, PROPERTIES as PF1_PROPERTIES } from "../properties/pf1/properties.mjs";
 import { ACTOR_TYPES as PF2E_ACTOR_TYPES, DERIVED_PROPERTIES as PF2E_DERIVED_PROPERTIES, PROPERTIES as PF2E_PROPERTIES } from "../properties/pf2e/properties.mjs";
@@ -32,7 +32,7 @@ Hooks.on("init", () => {
       case "cyphersystem":
         return CYPHERSYSTEM_ACTOR_TYPES;
       case "dnd5e":
-        return DND5E_ACTOR_TYPES;
+        return resolveDnd5eActorTypes(game.system.version);
       case "ose":
         return OSE_ACTOR_TYPES;
       case "pf1":
@@ -61,7 +61,7 @@ Hooks.on("init", () => {
       case "cyphersystem":
         return CYPHERSYSTEM_DERIVED_PROPERTIES;
       case "dnd5e":
-        return DND5E_DERIVED_PROPERTIES;
+        return resolveDnd5eDerivedProperties(game.system.version);
       case "ose":
         return OSE_DERIVED_PROPERTIES;
       case "pf1":
@@ -90,7 +90,7 @@ Hooks.on("init", () => {
       case "cyphersystem":
         return CYPHERSYSTEM_PROPERTIES;
       case "dnd5e":
-        return DND5E_PROPERTIES;
+        return resolveDnd5eProperties(game.system.version);
       case "ose":
         return OSE_PROPERTIES;
       case "pf1":

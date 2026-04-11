@@ -606,7 +606,7 @@ export class ChangeLog {
     const { document1Name, modifiedByName, changes } = group;
     const time = new Date().toLocaleTimeString("en-GB");
     const sanitize = str => String(str ?? "").replace(/<i ([^>]*)><\/i>/g, "<span $1>\u200b</span>").replace(/<(?!\/?span\b)[^>]*>/g, "");
-    const arrow = '<span class="fa fa-arrow-right">\u200b</span>';
+    const arrow = '<span class="fa-regular fa-arrow-right">\u200b</span>';
 
     let html = `<p><strong>${time}</strong> ${document1Name} <em>(modified by ${modifiedByName})</em></p>\n<ul>\n`;
     for ( const change of changes ) {

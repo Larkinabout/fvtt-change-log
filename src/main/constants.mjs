@@ -19,13 +19,13 @@ export const TEMPLATE = {
 /* -------------------------------------------- */
 
 export const BOOLEAN_ICON = {
-  false: '<i class="fa fa-xmark"></i>',
-  true: '<i class="fa fa-check"></i>'
+  false: '<i class="fa-regular fa-xmark"></i>',
+  true: '<i class="fa-regular fa-check"></i>'
 };
 
 /* -------------------------------------------- */
 
-export const EMPTY_ICON = '<i class="fa-solid fa-empty-set"></i>';
+export const EMPTY_ICON = '<i class="fa-regular fa-empty-set"></i>';
 
 /* -------------------------------------------- */
 

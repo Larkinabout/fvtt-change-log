@@ -8,6 +8,12 @@ A Foundry VTT module to log changes to the chat log.
 ![Change Log Journal](./.github/readme/change-log-journal.png)
 ![Change Log Changes for GM Form](./.github/readme/change-log-changes-for-gm-form.png)
 
+## Licence & Usage
+
+This module references Font Awesome Pro icons under a personal licence. The code in this repository is not licensed for redistribution. This module is designed for use with Foundry VTT V13 and V14 only.
+
+For full attribution and licensing details, see [ATTRIBUTION.md](ATTRIBUTION.md).
+
 # Features
 - Log changes per property and actor type.
 - Show specific changes to the GM, player or everyone.
@@ -27,6 +33,10 @@ A Foundry VTT module to log changes to the chat log.
 2. Click **Install Module**
 3. In the Manifest URL field, paste: `https://github.com/Larkinabout/fvtt-change-log/releases/latest/download/module.json`
 4. Click **Install** next to the pasted Manifest URL
+
+# Recommended Modules
+## [Custom Chat Tabs](https://foundryvtt.com/packages/custom-chat-tabs)
+Adds a dedicated Change Log chat tab so change messages can be filtered or shown exclusively in their own tab.
 
 # Supported Systems
 Change Log is intended to be system-agnostic, however only the systems listed are currently supported with pre-populated lists and friendly property names:

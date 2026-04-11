@@ -1,5 +1,6 @@
 import { MODULE } from "./constants.mjs";
 import { registerSettings } from "./settings.mjs";
+import * as migration from "./migration.mjs";
 import { Utils } from "./utils.mjs";
 import { ChangeLog } from "./change-log.mjs";
 
@@ -8,6 +9,7 @@ import { ChangeLog } from "./change-log.mjs";
  */
 Hooks.on("init", () => {
   registerSettings();
+  migration.register();
   game.changeLog = new ChangeLog();
   game.changeLog.init();
 
@@ -23,7 +25,9 @@ Hooks.on("init", () => {
 /**
  * Override chat notifications to suppress them for change log messages the user should not see.
  */
-Hooks.on("ready", () => {
+Hooks.on("ready", async () => {
+  await migration.migrate();
+
   const original = ui.chat.notify.bind(ui.chat);
   ui.chat.notify = (message, options) => {
     const changeLogFlags = message.flags?.["change-log"];

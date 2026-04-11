@@ -1,9 +1,88 @@
+/**
+ * The dnd5e version at which new actor types, properties, and derived
+ * properties became available. Systems older than this get the legacy
+ * 5.2.x property set.
+ * @type {string}
+ */
+const MODERN_VERSION = "5.3.0";
+
+/* -------------------------------------------- */
+
+/**
+ * Actor types that only exist in dnd5e >= MODERN_VERSION.
+ * @type {Set<string>}
+ */
+const MODERN_ONLY_ACTOR_TYPES = new Set([
+  "encounter"
+]);
+
+/* -------------------------------------------- */
+
+/**
+ * Properties that only exist in dnd5e >= MODERN_VERSION.
+ * For 5.2.x systems these are stripped from the whitelist.
+ * @type {Set<string>}
+ */
+const MODERN_ONLY_PROPERTIES = new Set([
+  "actor.system.attributes.concentration.ability",
+  "actor.system.attributes.concentration.bonuses.save",
+  "actor.system.attributes.concentration.limit",
+  "actor.system.attributes.hp.damage",
+  "actor.system.attributes.hp.effectiveMax",
+  "actor.system.attributes.hp.pct",
+  "actor.system.attributes.init.score",
+  "actor.system.attributes.init.total",
+  "actor.system.attributes.loyalty.value",
+  "actor.system.traits.weaponProf.mastery.value"
+]);
+
+/* -------------------------------------------- */
+
+/**
+ * Map of modern senses path → legacy senses path.
+ * @type {Record<string, string>}
+ */
+const LEGACY_PATH_RENAMES = {
+  "actor.system.attributes.senses.ranges.blindsight": "actor.system.attributes.senses.blindsight",
+  "actor.system.attributes.senses.ranges.darkvision": "actor.system.attributes.senses.darkvision",
+  "actor.system.attributes.senses.ranges.tremorsense": "actor.system.attributes.senses.tremorsense",
+  "actor.system.attributes.senses.ranges.truesight": "actor.system.attributes.senses.truesight"
+};
+
+/* -------------------------------------------- */
+
+/**
+ * Whether the active dnd5e system is at MODERN_VERSION or newer.
+ * Defaults to true when no version is available.
+ * @param {string} [systemVersion] System version
+ * @returns {boolean}
+ */
+function isModern(systemVersion) {
+  if ( !systemVersion ) return true;
+  return !foundry.utils.isNewerVersion(MODERN_VERSION, systemVersion);
+}
+
+/* -------------------------------------------- */
+
 export const ACTOR_TYPES = [
   "character",
   "npc",
   "vehicle",
-  "group"
+  "group",
+  "encounter"
 ];
+
+/* -------------------------------------------- */
+
+/**
+ * Resolve the actor types available for the active dnd5e version.
+ * @param {string} [systemVersion] System version
+ * @returns {string[]}
+ */
+export function resolveActorTypes(systemVersion) {
+  if ( isModern(systemVersion) ) return ACTOR_TYPES;
+  return ACTOR_TYPES.filter(type => !MODERN_ONLY_ACTOR_TYPES.has(type));
+}
 
 /* -------------------------------------------- */
 
@@ -91,6 +170,9 @@ export const PROPERTIES = [
   "actor.system.attributes.ac.shield",
   "actor.system.attunement.max",
   "actor.system.attunement.value",
+  "actor.system.attributes.concentration.ability",
+  "actor.system.attributes.concentration.bonuses.save",
+  "actor.system.attributes.concentration.limit",
   "actor.system.attributes.death.success",
   "actor.system.attributes.death.failure",
   "actor.system.attributes.encumbrance.value",
@@ -101,14 +183,20 @@ export const PROPERTIES = [
   "actor.system.attributes.hd",
   "actor.system.attributes.hp.bonuses.level",
   "actor.system.attributes.hp.bonuses.overall",
+  "actor.system.attributes.hp.damage",
+  "actor.system.attributes.hp.effectiveMax",
   "actor.system.attributes.hp.max",
+  "actor.system.attributes.hp.pct",
   "actor.system.attributes.hp.temp",
   "actor.system.attributes.hp.tempmax",
   "actor.system.attributes.hp.value",
   "actor.system.attributes.init.ability",
   "actor.system.attributes.init.bonus",
   "actor.system.attributes.init.mod",
+  "actor.system.attributes.init.score",
+  "actor.system.attributes.init.total",
   "actor.system.attributes.inspiration",
+  "actor.system.attributes.loyalty.value",
   "actor.system.attributes.movement.burrow",
   "actor.system.attributes.movement.climb",
   "actor.system.attributes.movement.fly",
@@ -117,11 +205,11 @@ export const PROPERTIES = [
   "actor.system.attributes.movement.units",
   "actor.system.attributes.movement.walk",
   "actor.system.attributes.prof",
-  "actor.system.attributes.senses.blindsight",
-  "actor.system.attributes.senses.darkvision",
+  "actor.system.attributes.senses.ranges.blindsight",
+  "actor.system.attributes.senses.ranges.darkvision",
+  "actor.system.attributes.senses.ranges.tremorsense",
+  "actor.system.attributes.senses.ranges.truesight",
   "actor.system.attributes.senses.special",
-  "actor.system.attributes.senses.tremorsense",
-  "actor.system.attributes.senses.truesight",
   "actor.system.attributes.senses.units",
   "actor.system.attributes.spellcasting",
   "actor.system.attributes.spelldc",
@@ -294,6 +382,7 @@ export const PROPERTIES = [
   "actor.system.spells.spell9.value",
   "actor.system.spells.spell9.max",
   "actor.system.traits.size",
+  "actor.system.traits.weaponProf.mastery.value",
   "actor.system.tools.art.ability",
   "actor.system.tools.art.bonus",
   "actor.system.tools.art.bonuses.check",
@@ -420,10 +509,41 @@ export const PROPERTIES = [
 
 /* -------------------------------------------- */
 
+/**
+ * Resolve properties for the active dnd5e version.
+ * @param {string} [systemVersion] System version
+ * @returns {string[]}
+ */
+export function resolveProperties(systemVersion) {
+  if ( isModern(systemVersion) ) return PROPERTIES;
+  return PROPERTIES
+    .filter(property => !MODERN_ONLY_PROPERTIES.has(property))
+    .map(property => LEGACY_PATH_RENAMES[property] ?? property);
+}
+
+/* -------------------------------------------- */
+
 export const DERIVED_PROPERTIES = [
   "actor.system.attributes.encumbrance.value",
   "actor.system.attributes.encumbrance.max",
   "actor.system.attributes.encumbrance.pct",
   "actor.system.attributes.encumbrance.encumbered",
+  "actor.system.attributes.hp.damage",
+  "actor.system.attributes.hp.effectiveMax",
+  "actor.system.attributes.hp.pct",
+  "actor.system.attributes.init.score",
+  "actor.system.attributes.init.total",
   "actor.system.spells.pact.max"
 ];
+
+/* -------------------------------------------- */
+
+/**
+ * Resolve derived properties.
+ * @param {string} [systemVersion] System version
+ * @returns {string[]}
+ */
+export function resolveDerivedProperties(systemVersion) {
+  if ( isModern(systemVersion) ) return DERIVED_PROPERTIES;
+  return DERIVED_PROPERTIES.filter(property => !MODERN_ONLY_PROPERTIES.has(property));
+}
